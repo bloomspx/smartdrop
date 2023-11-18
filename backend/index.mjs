@@ -3,29 +3,21 @@ import login from "./service/login.mjs";
 import verify from "./service/verify.mjs";
 import {buildResponse, buildCORSResponse} from "./utils/utils.mjs";
 
-const homePath = '/home';
-const registerPath = '/register';
-const loginPath = '/login';
-const verifyPath = '/verify';
-
 export const handler = async (event) => {
     console.log("Request Event:", event);
     let response;
     
     try{
         switch(true) {
-            case event.httpMethod === 'GET' && event.path === homePath:
-                response = buildResponse(200, "Welcome to the Home Page");
-                break;
-            case event.httpMethod === 'POST' && event.path === registerPath:
+            case event.httpMethod === 'POST' && event.path === '/register':
                 const registerBody = JSON.parse(event.body)
                 response = await register(registerBody)
                 break;
-            case event.httpMethod === 'POST' && event.path === loginPath:
+            case event.httpMethod === 'POST' && event.path === '/login':
                 const loginBody = JSON.parse(event.body)
                 response = await login(loginBody)
                 break;
-            case event.httpMethod === 'POST' && event.path === verifyPath:
+            case event.httpMethod === 'POST' && event.path === '/verify':
                 const verifyBody = JSON.parse(event.body)
                 response = await verify(verifyBody)
                 break;

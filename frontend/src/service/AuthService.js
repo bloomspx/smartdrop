@@ -13,14 +13,20 @@ module.exports = {
     getToken: function() {
         return sessionStorage.getItem('token');
     },
+    
+    getOrders: function() {
+        return sessionStorage.getItem('orders');
+    },
 
-    setUserSession: function(user, token) {
+    setUserSession: function(user, token, orders) {
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('token', token);
+        sessionStorage.setItem('orders', JSON.stringify(orders));
     },
 
     resetUserSession: function() {
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('orders');
     }
 }

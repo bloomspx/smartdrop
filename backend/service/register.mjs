@@ -1,76 +1,80 @@
-import { DynamoDB, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
-import { buildResponse } from "../utils/utils.mjs";
+import { DynamoDB, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { buildResponse }from "../utils/utils.mjs";
+import { generateToken } from '../utils/auth.mjs';
 import bcrypt from "bcryptjs";
 
 const client = new DynamoDB ({region: 'ap-southeast-1'});
 const userTable = 'User';
+const orderTable = 'Order';
 
-// registers new users
-export default async function register(userInfo) {
-    const { name, username, password, address } = userInfo;
-
-    if (!name || !address || !username || !password) {
-        return buildResponse(401, { message: "All fields are required" });
+export default async function login(user) {
+    const {phoneNumber, password} = user;
+    
+    // check for blank fields
+    if (!phoneNumber || !password) {
+        return buildResponse(401, {message: "phone number and password are required fields to login"})
+    }
+    
+    const dynamoUser = await getUser(phoneNumber);
+    if (!dynamoUser || !dynamoUser.phoneNumber) {
+        return buildResponse(401, {message: "user does not exist"});
+    }
+    if (!bcrypt.compareSync(password, dynamoUser.password.S)) {
+        return buildResponse(401, {message: "invalid password"});
     }
 
-    // check for duplicate usernames
-    const dynamoUser = await getUser(username);
-
-    if (dynamoUser && dynamoUser.username) {
-        return buildResponse(401, { message: "Username already exists in database, please choose a different username" });
+    const orders = await getOrders(phoneNumber);
+    
+    const userInfo = {
+        phoneNumber: dynamoUser.phoneNumber,
+        name: dynamoUser.name,
     }
-
-    const encryptedPass = bcrypt.hashSync(password, 10);
-    const user = {
-        username: username.toLowerCase().trim(),
-        name: name,
-        password: encryptedPass,
-        address: address
+    
+    const token = generateToken(userInfo)
+    const response = {
+        user: userInfo,
+        token: token,
+        orders: orders
     }
-    console.log('User Data:', user)
-
-    // save new user to database
-    const saveUserResponse = await saveUser(user);
-    if (!saveUserResponse) {
-        return buildResponse(503, { message: "Server Error, please try again later" });
-    }
-
-    return buildResponse(200, {username: username});
+    return buildResponse(200, response);
 }
 
-async function getUser(username) {
-    const command = new GetItemCommand({
+async function getUser(phoneNumber) {
+    const params = {
         TableName: userTable,
-        Key: {
-            "username": {
-                "S": username
-            }
-        }
-    });
-    const response = await client.send(command).then(response => {
-        return response.Item;
-    }, error => {
-        console.error("There is an error:", error)
-    });
-    console.log(response);
-    return response;
+        KeyConditionExpression: 'phoneNumber = :phoneNumber',
+        ExpressionAttributeValues: {
+            ':phoneNumber': { S: phoneNumber },
+        },
+    };
+
+    try {
+        const command = new QueryCommand(params);
+        const response = await client.send(command);
+        console.log(response); // This will contain the items from the 'User' table for the specified phoneNumber
+        return response.Items; // Return the items for the specified phoneNumber
+    } catch (error) {
+        console.error('getUser error:', error.message, error.stack);
+        throw error; // Rethrow the error if you want to propagate it further
+    }
 }
 
-async function saveUser(user){
-    const command = new PutItemCommand ({
-        TableName: userTable,
-        Item: {
-            username: { S: user.username },
-            name: { S: user.name },        
-            password: { S: user.password },
-            address: { S: user.address },
-        }
-    })
-    const response = await client.send(command).then(response => {
-        return true;
-    }, error => {
-        console.error("There is an error:", error)
-    });;
-    console.log(response);
-    return response;
+async function getOrders(phoneNumber) {
+
+    const params = {
+        TableName: orderTable,
+        KeyConditionExpression: 'phoneNumber = :phoneNumber',
+        ExpressionAttributeValues: {
+            ':phoneNumber': { S: phoneNumber },
+        },
+    };
+
+    try {
+        const command = new QueryCommand(params);
+        const response = await client.send(command);
+        console.log(response.Items); // This will contain the items from the 'Order' table for the specified username
+        return response.Items
+    } catch (error) {
+        console.error('getOrders Error:', error.message, error.stack);
+    }
 }

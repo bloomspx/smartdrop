@@ -1,0 +1,11 @@
+.user-table {
+    margin: 20px;
+    width: 400px;
+    border: 1px solid #ddd;
+  }
+
+    .user-table div {
+        padding: 0px 5px;
+        text-align: left;
+        width: fit-content;
+    }

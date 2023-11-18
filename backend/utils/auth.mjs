@@ -8,12 +8,12 @@ export function generateToken(userInfo) {
 
     // sign using a token from Lambda function
     return jwt.sign(userInfo, process.env.JWT_secret, {
-        expiresIn: "10000"
+        expiresIn: "1h"
     })
 }
 
 // verifies if token is valid
-export function verifyToken(username, token) {
+export function verifyToken(phoneNo, token) {
     return jwt.verify(token, process.env.JWT_secret, (error, response) => {
         if (error) {
             return {
@@ -21,15 +21,15 @@ export function verifyToken(username, token) {
                 message: "invalid token"
             }
         }
-        if (response.username !== username) {
+        if (response.phoneNo !== phoneNo) {
             return {
                 verified: false,
-                message: "invalid user"
+                message: "invalid phone number"
             }
         }
         return {
             verified: true,
-            message: "verified user"
+            message: "verified phone number"
         }
     })
 }

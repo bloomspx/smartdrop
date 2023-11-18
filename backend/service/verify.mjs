@@ -3,7 +3,7 @@ import { verifyToken } from '../utils/auth.mjs';
 
 
 export default function verify(requestBody) {
-    if (!requestBody.user || !requestBody.user.username || !requestBody.token) {
+    if (!requestBody.user || !requestBody.user.phoneNumber || !requestBody.token) {
         return buildResponse(401, {
             verified: false,
             message: "incorrect request body"
@@ -12,7 +12,7 @@ export default function verify(requestBody) {
 
     const user = requestBody.user
     const token = requestBody.token
-    const verification = verifyToken(user.username.S, token)
+    const verification = verifyToken(user.phoneNumber.S, token)
     if (!verification.verified) {
         return buildResponse(401, verification);
     }
