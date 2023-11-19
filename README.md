@@ -1,4 +1,4 @@
-# 50.035 CCIOT Project: IOT Smart Delivery Box
+# 50.046 CCIOT Project: IOT Smart Delivery Box
 
 
 ## Features Implemented (Backend)
