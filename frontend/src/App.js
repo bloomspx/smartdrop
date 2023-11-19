@@ -8,6 +8,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import { useEffect, useState } from "react";
 import { getToken, getUser, resetUserSession, setUserSession } from "./service/AuthService";
 import axios from "axios";
+import Delivery from "./pages/delivery/Delivery";
 
 const verifyTokenUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/verify';
 
@@ -69,6 +70,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Dashboard/>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/newdelivery"
+            element={
+              <PrivateRoute>
+                <Delivery/>
               </PrivateRoute>
             }
           />

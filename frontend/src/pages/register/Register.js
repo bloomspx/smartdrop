@@ -15,6 +15,9 @@ const Register = () => {
   const navigate = useNavigate();
 
   // Function to handle form submission
+  // TODO: error checking for fields (make sure they follow ther right format)
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     setLoading(true);

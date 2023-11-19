@@ -3,6 +3,7 @@ import { verifyToken } from '../utils/auth.mjs';
 
 
 export default function verify(requestBody) {
+    console.log("verify:", requestBody);
     if (!requestBody.user || !requestBody.user.phoneNumber || !requestBody.token) {
         return buildResponse(401, {
             verified: false,
@@ -12,7 +13,8 @@ export default function verify(requestBody) {
 
     const user = requestBody.user
     const token = requestBody.token
-    const verification = verifyToken(user.phoneNumber.S, token)
+    const verification = verifyToken(user.phoneNumber, token)
+    
     if (!verification.verified) {
         return buildResponse(401, verification);
     }

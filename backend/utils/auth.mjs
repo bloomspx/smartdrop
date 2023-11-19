@@ -13,7 +13,7 @@ export function generateToken(userInfo) {
 }
 
 // verifies if token is valid
-export function verifyToken(phoneNo, token) {
+export function verifyToken(phoneNumber, token) {
     return jwt.verify(token, process.env.JWT_secret, (error, response) => {
         if (error) {
             return {
@@ -21,15 +21,15 @@ export function verifyToken(phoneNo, token) {
                 message: "invalid token"
             }
         }
-        if (response.phoneNo !== phoneNo) {
+        if (response.phoneNumber !== phoneNumber) {
             return {
                 verified: false,
-                message: "invalid phone number"
+                message: "invalid user"
             }
         }
         return {
             verified: true,
-            message: "verified phone number"
+            message: "verified user"
         }
     })
 }

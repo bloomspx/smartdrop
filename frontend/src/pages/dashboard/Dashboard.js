@@ -14,7 +14,7 @@ const Dashboard = () => {
     console.log(user, orders)
 
     const addItemHandler = () => {
-
+        navigate("/newdelivery")
     }
 
     const logoutHandler = () => {
@@ -22,20 +22,18 @@ const Dashboard = () => {
         navigate("/");
     }
 
-    
     return (
         <div className="container">
             <div className="header-container">
-                <h1>Dashboard</h1>
+                <h1>Parcel Management Dashboard</h1>
+                <input type="button" value="Create New Delivery" onClick={addItemHandler}/>
+                <input type="button" value="Logout" onClick={logoutHandler}/>
             </div>
-            <h3>Welcome Back!</h3>
             <div className="user-table">
                 <div>
                     <p><b>Phone Number:</b> {user.phoneNumber}</p>
                 </div>
             </div>
-            <input type="button" value="Add Item" onClick={addItemHandler}/>
-            <input type="button" value="Logout" onClick={logoutHandler}/>
             <h4>My Orders</h4>
             <p>{orders}</p> 
         </div>
