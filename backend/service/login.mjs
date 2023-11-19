@@ -9,7 +9,6 @@ const orderTable = 'Order';
 
 export default async function login(user) {
     const {phoneNumber, password} = user;
-    console.log("User:", user)
     
     // check for blank fields
     if (!phoneNumber || !password) {
@@ -18,6 +17,7 @@ export default async function login(user) {
     
     const dynamoUser = await getUser(phoneNumber);
     console.log("dynamoUser:", dynamoUser)
+    
     if (!dynamoUser) {
         return buildResponse(401, {message: "user does not exist"});
     }

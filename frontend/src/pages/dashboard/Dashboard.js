@@ -11,6 +11,8 @@ const Dashboard = () => {
     // TODO: convert orders (JSONify from original list) into readable data
     const orders = getOrders();
 
+    // TODO: find a way to add new orders to sessionstorage such that most updated orders are reflected
+    // while minimizing API calls
     console.log(user, orders)
 
     const addItemHandler = () => {

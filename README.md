@@ -3,8 +3,9 @@
 
 ## Features Implemented
 
-### Backend
-1. Login / Authentication System running on AWS Lambda
+### Backend (Running on AWS Lambda)
+1. Login + Register + Authentication
+2. Add new orders to 'Order' Table
 
 ### Hardware
 1. Installation of Ubuntu 22.04 and Python 3.10.2 on Raspberry Pi 4
