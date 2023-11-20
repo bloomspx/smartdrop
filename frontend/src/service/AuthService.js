@@ -21,12 +21,10 @@ module.exports = {
     setUserSession: function(user, token, orders) {
         sessionStorage.setItem('user', JSON.stringify(user));
         sessionStorage.setItem('token', token);
-        sessionStorage.setItem('orders', JSON.stringify(orders));
     },
 
     resetUserSession: function() {
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('token');
-        sessionStorage.removeItem('orders');
     }
 }

@@ -31,7 +31,7 @@ const Home = () => {
         }
         axios.post(loginUrl, requestBody, requestConfig).then(response => {
             console.log("login response:", response.data);
-            setUserSession(response.data.user, response.data.token, response.data.orders);
+            setUserSession(response.data.user, response.data.token);
             setLoading(false);
             navigate('/dashboard');
         }).catch(error => {

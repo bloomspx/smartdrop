@@ -9,11 +9,11 @@ const Dashboard = () => {
     // TODO: Save states of users and orders
     const user = getUser();
     // TODO: convert orders (JSONify from original list) into readable data
-    const orders = getOrders();
+    // const orders = getOrders();
 
     // TODO: find a way to add new orders to sessionstorage such that most updated orders are reflected
     // while minimizing API calls
-    console.log(user, orders)
+    console.log(user)
 
     const addItemHandler = () => {
         navigate("/newdelivery")
@@ -37,7 +37,7 @@ const Dashboard = () => {
                 </div>
             </div>
             <h4>My Orders</h4>
-            <p>{orders}</p> 
+            {/* <p>{orders}</p>  */}
         </div>
     )
 }

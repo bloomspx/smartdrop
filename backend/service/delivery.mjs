@@ -1,13 +1,33 @@
 import { DynamoDB, PutItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { buildResponse }from "../utils/utils.mjs";
-import { generateToken } from '../utils/auth.mjs';
-import bcrypt from "bcryptjs";
 
 const client = new DynamoDB ({region: 'ap-southeast-1'});
 const userTable = 'User';
 const orderTable = 'Order';
 
-export default async function newDelivery(order) {
+export async function getOrders(user) {
+    
+    const {phoneNumber} = user;
+    const params = {
+        TableName: orderTable,
+        KeyConditionExpression: 'phoneNumber = :phoneNumber',
+        ExpressionAttributeValues: {
+            ':phoneNumber': { S: phoneNumber },
+        },
+    };
+
+    try {
+        const command = new QueryCommand(params);
+        const response = await client.send(command);
+        console.log("getOrders:", response.Items); // This will contain the items from the 'Order' table for the specified username
+        return buildResponse(200, response.Items);
+    } catch (error) {
+        console.error('getOrders Error:', error.message, error.stack);
+        return buildResponse(503, { message: "Server Error, please try again later" });
+    }
+}
+
+export async function newDelivery(order) {
     const {phoneNumber, itemName, shopName} = order;
     
     // check for blank fields
@@ -37,6 +57,8 @@ async function saveOrder(phoneNumber, itemName, shopName) {
             existingEntry = await getOrder(phoneNumber, passcode);
         } 
 
+        const currentDateTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' });
+
         // Save the new entry to the 'Order' table
         const params = {
             TableName: orderTable,
@@ -44,8 +66,9 @@ async function saveOrder(phoneNumber, itemName, shopName) {
                 phoneNumber: { S: phoneNumber },
                 passcode: { S: passcode },
                 itemName: { S: itemName },
-                shopName: { S: shopName}, 
-
+                shopName: { S: shopName }, 
+                orderDate: { S: currentDateTime },
+                isDelivered: { S: "False" },
             },
         };
 
@@ -81,3 +104,5 @@ function generateRandomCode() {
     const randomCode = Math.floor(Math.random() * 900000) + 100000;
     return randomCode.toString(); // Convert to string to ensure it is exactly 6 digits
 }
+
+export default { getOrders, newDelivery };

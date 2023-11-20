@@ -1,7 +1,7 @@
 import register from "./service/register.mjs";
 import login from "./service/login.mjs";
 import verify from "./service/verify.mjs";
-import newDelivery from "./service/delivery.mjs";
+import {getOrders, newDelivery} from "./service/delivery.mjs";
 import {buildResponse, buildCORSResponse} from "./utils/utils.mjs";
 
 export const handler = async (event) => {
@@ -21,6 +21,10 @@ export const handler = async (event) => {
             case event.httpMethod === 'POST' && event.path === '/verify':
                 const verifyBody = JSON.parse(event.body)
                 response = await verify(verifyBody)
+                break;
+            case event.httpMethod === 'POST' && event.path === '/getorders':
+                const ordersBody = JSON.parse(event.body)
+                response = await getOrders(ordersBody)
                 break;
             case event.httpMethod === 'POST' && event.path === '/newdelivery':
                 const newDeliveryBody = JSON.parse(event.body)
