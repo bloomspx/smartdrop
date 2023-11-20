@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 
 const client = new DynamoDB ({region: 'ap-southeast-1'});
 const userTable = 'User';
-const orderTable = 'Order';
 
 export default async function login(user) {
     const {phoneNumber, password} = user;
@@ -16,7 +15,6 @@ export default async function login(user) {
     }
     
     const dynamoUser = await getUser(phoneNumber);
-    console.log("dynamoUser:", dynamoUser)
     
     if (!dynamoUser) {
         return buildResponse(401, {message: "user does not exist"});
@@ -25,17 +23,15 @@ export default async function login(user) {
         return buildResponse(401, {message: "invalid password"});
     }
 
-    const orders = await getOrders(phoneNumber);
-    
     const userInfo = {
         phoneNumber: dynamoUser[0].phoneNumber.S,
+        deviceID: dynamoUser[0].deviceID.S,
     }
     
     const token = generateToken(userInfo)
     const response = {
         user: userInfo,
         token: token,
-        orders: orders
     }
     return buildResponse(200, response);
 }
@@ -57,25 +53,5 @@ async function getUser(phoneNumber) {
     } catch (error) {
         console.error('getUser error:', error.message, error.stack);
         throw error; // Rethrow the error if you want to propagate it further
-    }
-}
-
-async function getOrders(phoneNumber) {
-
-    const params = {
-        TableName: orderTable,
-        KeyConditionExpression: 'phoneNumber = :phoneNumber',
-        ExpressionAttributeValues: {
-            ':phoneNumber': { S: phoneNumber },
-        },
-    };
-
-    try {
-        const command = new QueryCommand(params);
-        const response = await client.send(command);
-        console.log("getOrders:", response.Items); // This will contain the items from the 'Order' table for the specified username
-        return response.Items
-    } catch (error) {
-        console.error('getOrders Error:', error.message, error.stack);
     }
 }

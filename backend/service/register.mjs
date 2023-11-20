@@ -35,7 +35,7 @@ export default async function register(userInfo) {
         return buildResponse(503, { message: "Server Error, please try again later" });
     }
 
-    return buildResponse(200, {phoneNumber: phoneNumber});
+    return buildResponse(200, {message: "true"});
 }
 
 async function getUser(phoneNumber) {
@@ -62,8 +62,8 @@ async function saveUser(user){
     const command = new PutItemCommand ({
         TableName: userTable,
         Item: {
-            deviceID: { S: user.deviceID },
             phoneNumber: { S: user.phoneNumber },        
+            deviceID: { S: user.deviceID },
             password: { S: user.password },
             address: { S: user.address },
         }

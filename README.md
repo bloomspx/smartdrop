@@ -3,9 +3,19 @@
 
 ## Features Implemented
 
-### Backend (Running on AWS Lambda)
-1. Login + Register + Authentication
-2. Add new orders to 'Order' Table
+### Backend API Calls (Running on AWS Lambda)
+
+Backend API URL: https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta
+
+`/register`: takes in a dict of {deviceID, phoneNumber, password, address} and returns {message} depending on whether registration was successful
+
+`/login`: takes in a dict of {phoneNumber, password} and returns { {user: deviceID, phoneNumber}, token}
+
+`/verify`: takes in a dict of {{user: phoneNumber}, token} and returns {verified, message}
+
+`/getallorders`: takes in a dict of {deviceID} and returns a list of objects containing order info
+
+`/neworder`: takes in a dict of {deviceID, itemName, shopName} and returns dict of {deviceID, passcode, itemName, shopName, orderDate, isDelivered, imageURL, deliveredDate}
 
 ### Hardware
 1. Installation of Ubuntu 22.04 and Python 3.10.2 on Raspberry Pi 4

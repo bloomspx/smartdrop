@@ -1,7 +1,7 @@
 import register from "./service/register.mjs";
 import login from "./service/login.mjs";
 import verify from "./service/verify.mjs";
-import {getOrders, newDelivery} from "./service/delivery.mjs";
+import {getAllOrders, newOrder, updateOrder} from "./service/delivery.mjs";
 import {buildResponse, buildCORSResponse} from "./utils/utils.mjs";
 
 export const handler = async (event) => {
@@ -22,13 +22,17 @@ export const handler = async (event) => {
                 const verifyBody = JSON.parse(event.body)
                 response = await verify(verifyBody)
                 break;
-            case event.httpMethod === 'POST' && event.path === '/getorders':
+            case event.httpMethod === 'POST' && event.path === '/getallorders':
                 const ordersBody = JSON.parse(event.body)
-                response = await getOrders(ordersBody)
+                response = await getAllOrders(ordersBody)
                 break;
-            case event.httpMethod === 'POST' && event.path === '/newdelivery':
-                const newDeliveryBody = JSON.parse(event.body)
-                response = await newDelivery(newDeliveryBody)
+            case event.httpMethod === 'POST' && event.path === '/neworder':
+                const newOrderBody = JSON.parse(event.body)
+                response = await newOrder(newOrderBody)
+                break;
+            case event.httpMethod === 'POST' && event.path === '/updateorder':
+                const updateOrderBody = JSON.parse(event.body)
+                response = await updateOrder(updateOrderBody)
                 break;
             case event.httpMethod === 'OPTIONS':
                 response = buildCORSResponse(200, 'Success');
