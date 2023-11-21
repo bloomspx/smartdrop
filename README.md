@@ -164,6 +164,13 @@ Backend API URL:  https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/be
 }
 ```
 
+### Additional Lambda Functions for MQTT PUB/SUB
+
+`smart-locker-validate-order`: takes in dict of {deviceID, passcode}, checks for entry in DynamoDB and SUB to `/cciot/validated` with {deviceID, passcode, isValidated}
+
+`smart-locker-publish-photo`: takes in dict of {imageURL, deviceID, passcode}, updates DynamoDB and SUB to `/cciot/photo-published`
+
+
 ### Hardware
 1. Installation of Ubuntu 22.04 and Python 3.10.2 on Raspberry Pi 4
 2. Wiring of 4x3 Keypad, Reading of keypad input and validating hardcoded passcode
