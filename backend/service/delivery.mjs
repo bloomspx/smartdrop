@@ -99,7 +99,7 @@ async function saveOrder(deviceID, itemName, shopName) {
                 passcode: { S: passcode },
                 itemName: { S: itemName },
                 shopName: { S: shopName }, 
-                orderDate: { S: new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }) },
+                orderDate: { S: new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })},
                 isDelivered: { BOOL: false },
                 imageURL: { S: "" },
                 deliveredDate: { S: "" },
