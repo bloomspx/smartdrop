@@ -6,11 +6,11 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
 import { useEffect, useState } from "react";
-import { getToken, getUser, resetUserSession, setUserSession } from "./service/AuthService";
+import { getToken, getUser, resetUserSession, setUserSession, BACKEND_API_ADDRESS, API_KEY } from "./service/AuthService";
 import axios from "axios";
 import Delivery from "./pages/delivery/Delivery";
 
-const verifyTokenUrl = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/verify';
+const verifyTokenUrl = BACKEND_API_ADDRESS + 'verify';
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
 
     const requestConfig = {
       headers: {
-          'x-api-key': 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
+          'x-api-key': API_KEY
       }
     }
     const requestBody = {

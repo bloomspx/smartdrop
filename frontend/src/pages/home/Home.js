@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { setUserSession } from '../../service/AuthService';
+import { setUserSession, BACKEND_API_ADDRESS, API_KEY } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 
-const loginUrl = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/login';
+const loginUrl = BACKEND_API_ADDRESS + 'login';
 
 const Home = () => {
     // State variables for form fields
@@ -21,7 +21,7 @@ const Home = () => {
 
         const requestConfig = {
             headers: {
-                'x-api-key': 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
+                'x-api-key': API_KEY
             }
         }
 
