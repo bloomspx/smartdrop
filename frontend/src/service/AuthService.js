@@ -1,6 +1,6 @@
 // Denotes all authentication functions for a user
-const BACKEND_API_ADDRESS = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/'
-const API_KEY = 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
+const BACKEND_API_ADDRESS = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/'
+const API_KEY = '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
 
 module.exports = {
     // constants

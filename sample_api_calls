@@ -15,7 +15,7 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
@@ -24,10 +24,10 @@
 					"raw": "{\r\n    \"phoneNumber\": \"test\",\r\n    \"password\": \"test\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/login",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/login",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
@@ -51,19 +51,19 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"deviceID\": \"test4\",\r\n    \"phoneNumber\": \"test4\",\r\n    \"password\": \"test4\",\r\n    \"address\": \"test4\"\r\n}"
+					"raw": "{\r\n    \"deviceID\": \"test5\",\r\n    \"phoneNumber\": \"test5\",\r\n    \"password\": \"test5\",\r\n    \"address\": \"test5\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/register",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/register",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
@@ -87,7 +87,7 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
@@ -96,10 +96,10 @@
 					"raw": "{\r\n    \"deviceID\": \"test\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/getallorders",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/getallorders",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
@@ -123,19 +123,19 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"user\":{\r\n        \"username\": \"test3\"\r\n    },\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6eyJTIjoidGVzdDIifSwibmFtZSI6eyJTIjoidGVzdDIifSwiaWF0IjoxNzAwMDM3MTY5LCJleHAiOjE3MDAwNDQzNjl9.Z42-EftEegSSnbDb3KD75Z9XZsSQ2hkR6H3o3BDgpmc\"\r\n}"
+					"raw": "{\r\n    \"user\":{\r\n        \"phoneNumber\": \"test\"\r\n    },\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6InRlc3QiLCJkZXZpY2VJRCI6InRlc3QiLCJpYXQiOjE3MDA1ODI3ODcsImV4cCI6MTcwMDU4NjM4N30.T44JAPXTUBSjCnH0ksZ2vRo0h47DxHf00rHtaqkH26E\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/verify",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/verify",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
@@ -159,7 +159,7 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
@@ -168,10 +168,10 @@
 					"raw": "{\r\n    \"deviceID\": \"test\",\r\n    \"itemName\": \"shoope\",\r\n    \"shopName\": \"shoope\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/neworder",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/neworder",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
@@ -195,7 +195,7 @@
 				"header": [
 					{
 						"key": "x-api-key",
-						"value": "geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6",
+						"value": "7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1",
 						"type": "default"
 					}
 				],
@@ -204,10 +204,10 @@
 					"raw": "{\r\n    \"deviceID\": \"test\",\r\n    \"passcode\": \"633218\"\r\n}"
 				},
 				"url": {
-					"raw": "https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/updateorder",
+					"raw": "https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/updateorder",
 					"protocol": "https",
 					"host": [
-						"woqp7vxlb1",
+						"teqt6xqjj5",
 						"execute-api",
 						"ap-southeast-1",
 						"amazonaws",
