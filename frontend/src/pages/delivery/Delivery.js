@@ -3,7 +3,7 @@ import { getOrders, getUser } from "../../service/AuthService"
 import { useState } from 'react';
 import axios from "axios";
 
-const addDeliveryUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/newdelivery';
+const addDeliveryUrl = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/neworder';
 
 const Delivery = () => {
 
@@ -22,12 +22,12 @@ const Delivery = () => {
         
         const requestConfig = {
             headers: {
-                'x-api-key': '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
+                'x-api-key': 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
             }
         }
 
         const requestBody = {
-            phoneNumber: user.phoneNumber,
+            deviceID: user.deviceID,
             itemName: itemName,
             shopName: shopName,
         }

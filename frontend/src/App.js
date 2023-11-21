@@ -10,7 +10,7 @@ import { getToken, getUser, resetUserSession, setUserSession } from "./service/A
 import axios from "axios";
 import Delivery from "./pages/delivery/Delivery";
 
-const verifyTokenUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/verify';
+const verifyTokenUrl = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/verify';
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
 
     const requestConfig = {
       headers: {
-          'x-api-key': '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
+          'x-api-key': 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
       }
     }
     const requestBody = {

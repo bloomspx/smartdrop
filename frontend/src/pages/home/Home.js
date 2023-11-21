@@ -3,7 +3,7 @@ import axios from 'axios';
 import { setUserSession } from '../../service/AuthService';
 import { useNavigate } from 'react-router-dom';
 
-const loginUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/login';
+const loginUrl = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta/login';
 
 const Home = () => {
     // State variables for form fields
@@ -21,7 +21,7 @@ const Home = () => {
 
         const requestConfig = {
             headers: {
-                'x-api-key': '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
+                'x-api-key': 'geWKcJIsit3toxhMxHcTy4Ei4gKsa3EUapZEggT6'
             }
         }
 
