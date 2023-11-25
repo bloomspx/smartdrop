@@ -144,11 +144,12 @@ def key_in_additional_orders():
     if user_input in passcodes:
         print("Code correct!")
         unlock()
-        user_input = ""
         process_state = ProcessState.TAKINGORDERPICTURE
     else:
         print("Incorrect passcode, please key in again or press * to begin locking sequence")
         process_state = ProcessState.KEYINGINORDERS
+    user_input = ""
+    return
 
 def start_locking_sequence():
     global process_state
