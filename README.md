@@ -5,7 +5,7 @@
 
 ### Backend API Calls (Running on AWS Lambda)
 
-Backend API URL:  https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/
+Backend API URL: https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta
 
 `/register`: takes in a dict of {deviceID, phoneNumber, password, address} and returns {message} depending on whether registration was successful
 
