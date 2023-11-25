@@ -12,7 +12,8 @@ class ProcessState(Enum):
     TAKINGORDERPICTURE = 2,
     KEYINGINORDERS = 3,
     CONFIRMINGMOREORDERS = 4,
-    WAITINGTOLOCKBOX = 5
+    CONFIRMLOCKSEQUENCE = 5,
+    WAITINGTOLOCKBOX = 6
 
 class LimitSwitchState(Enum):
     OPEN = "open"
@@ -45,7 +46,7 @@ keypadPressed = -1
 switch_state = 1
 prev_switch_state = -1
 
-######## HELPER FUNCTIONS ########
+########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
 def unlock():
     global lock_state
@@ -91,7 +92,7 @@ def readLine(line, characters):
         user_input = user_input + characters[2]
     GPIO.output(line, GPIO.LOW)
 
-######## STATE SPECIFIC FUNCTIONS ########
+########################################## STATE SPECIFIC FUNCTIONS ##########################################
 ## WAITINGTOUNLCOCKBOX ##
 # Backspace func
 def backspace():
@@ -126,7 +127,64 @@ def invalidate_asterisk_at_photo_state():
     print("Please press # to take picture")
     process_state = ProcessState.TAKINGORDERPICTURE
 
-# Checking for # and *
+## CONFIRMINGMOREORDERS ##
+def confirm_more_orders():
+    global process_state
+    process_state = ProcessState.KEYINGINORDERS
+
+def confirm_no_more_orders():
+    global process_state
+    print("Thank you, please close the door")
+    process_state = ProcessState.WAITINGTOLOCKBOX
+
+## KEYINGINORDERS ##
+def key_in_additional_orders():
+    global user_input
+    global process_state
+    if user_input in passcodes:
+        print("Code correct!")
+        unlock()
+        user_input = ""
+        process_state = ProcessState.TAKINGORDERPICTURE
+    else:
+        print("Incorrect passcode, please key in again or press * to begin locking sequence")
+        process_state = ProcessState.KEYINGINORDERS
+
+def start_locking_sequence():
+    global process_state
+    global user_input
+    if len(user_input) == 0:
+        process_state = ProcessState.CONFIRMLOCKSEQUENCE
+    else:
+        user_input = user_input[:-1]
+    return
+
+
+## CONFIRMLOCKSEQUENCE ##
+def confirm_lock_sequence():
+    global process_state
+    process_state = ProcessState.WAITINGTOLOCKBOX
+
+def return_to_keying_in_orders():
+    global process_state
+    process_state = ProcessState.KEYINGINORDERS
+
+## WAITINGTOLOCKBOX ##
+def lock_box():
+    global process_state
+    if limit_switch_state == LimitSwitchState.CLOSED:
+        lock()
+        process_state = ProcessState.WAITINGTOUNLOCKBOX
+    else:
+        print("Please close the door properly")
+    return
+
+def invalid_asterisk_at_locking_state():
+    global process_state
+    print("Please press # to lock the door")
+    process_state = ProcessState.WAITINGTOLOCKBOX
+
+########################################## GENERAL KEYPAD FUNCTIONS ##########################################
 def checkSpecialKeys(hash_func, asterisk_func):
     global passcodes
     global process_state
@@ -154,7 +212,7 @@ def keypad_input(hash_func, asterisk_func):
     else:
         time.sleep(0.1)
 
-
+########################################## MAIN STATE MACHINE ##########################################
 def state_machine():
     global lock_state
     global process_state
@@ -172,36 +230,16 @@ def state_machine():
         elif process_state == ProcessState.TAKINGORDERPICTURE:
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
         elif process_state == ProcessState.CONFIRMINGMOREORDERS:
-            user_input = input("Do you have more orders? (y/n) ")
-            if user_input == "y":
-                process_state = ProcessState.KEYINGINORDERS
-            else:
-                print("Thank you, please close the door")
-                process_state = ProcessState.WAITINGTOLOCKBOX
+            keypad_input(hash_func=confirm_more_orders, asterisk_func=confirm_no_more_orders)
         elif process_state == ProcessState.KEYINGINORDERS:
-            user_input = input("Enter order passcode: ")
-            if user_input == passcode:
-                print("Correct passcode")
-                unlock()
-                process_state = ProcessState.TAKINGORDERPICTURE
-            else:
-                # User may want to break out of keying in sequence and just lock the door. This is the difference between the initial WAITINGTOUNLOCKBOX State
-                print("Incorrect passcode, please key in again or press # to begin locking sequence")
-                if user_input == "#":
-                    process_state = ProcessState.WAITINGTOLOCKBOX
-                else:
-                    process_state = ProcessState.KEYINGINORDERS
+            keypad_input(hash_func=key_in_additional_orders, asterisk_func=start_locking_sequence)
+        elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
+            print("Please press # to confirm locking sequence. Press * to return to keying in orders")
+            keypad_input(hash_func=confirm_lock_sequence, asterisk_func=return_to_keying_in_orders)
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
-            # Simulate the limit switch being in contact with the door 
-            limit_switch_state = input("Is the door closed? (closed/open)")
-            if limit_switch_state == LimitSwitchState.CLOSED.value:
-                user_input = input("Press # to lock")
-                if user_input == "#":
-                    lock()
-                    process_state = ProcessState.WAITINGTOUNLOCKBOX
-            else:
-                print("Please close the door properly")
+            keypad_input(hash_func=lock_box, asterisk_func=invalid_asterisk_at_locking_state)
 
+########################################## MAIN DRIVER FUNCTIOn ##########################################
 if __name__ == "__main__":
     try:
         setup()
