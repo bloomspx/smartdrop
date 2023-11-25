@@ -10,7 +10,8 @@ class ProcessState(Enum):
     TAKINGORDERPICTURE = 2,
     KEYINGINORDERS = 3,
     CONFIRMINGMOREORDERS = 4,
-    WAITINGTOLOCKBOX = 5
+    CONFIRMLOCKSEQUENCE = 5,
+    WAITINGTOLOCKBOX = 6
 
 class LimitSwitchState(Enum):
     OPEN = "open"
@@ -69,9 +70,16 @@ def state_machine():
             # User may want to break out of keying in sequence and just lock the door. This is the difference between the initial WAITINGTOUNLOCKBOX State
             print("Incorrect passcode, please key in again or press # to begin locking sequence")
             if user_input == "#":
-                process_state = ProcessState.WAITINGTOLOCKBOX
+                process_state = ProcessState.CONFIRMLOCKSEQUENCE
             else:
                 process_state = ProcessState.KEYINGINORDERS
+    elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
+        user_input = input("Press # to confirm locking sequence, * to return to keying in orders")
+        if user_input == "#":
+            lock()
+            process_state = ProcessState.WAITINGTOLOCKBOX
+        else:
+            process_state = ProcessState.KEYINGINORDERS
     elif process_state == ProcessState.WAITINGTOLOCKBOX:
         # Simulate the limit switch being in contact with the door 
         limit_switch_state = input("Is the door closed? (closed/open)")
