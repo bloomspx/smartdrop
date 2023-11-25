@@ -1,0 +1,170 @@
+{
+	"info": {
+		"_postman_id": "82cff4e3-c448-4c8e-8bd0-dba5336f3e1e",
+		"name": "AWS Frontend Reqs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17019592"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceID\": \"312904901232\",\r\n    \"phoneNumber\": \"97228280\",\r\n    \"password\": \"test\",\r\n    \"address\": \"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{awsBaseUrl}}/register",
+					"host": [
+						"{{awsBaseUrl}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phoneNumber\": \"97228280\",\r\n    \"password\": \"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{awsBaseUrl}}/login",
+					"host": [
+						"{{awsBaseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\":{\r\n        \"phoneNumber\": \"97228280\"\r\n    },\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijk3MjI4MjgwIiwiZGV2aWNlSUQiOiIzMTI5MDQ5MDEyMzIiLCJpYXQiOjE3MDA5MzMzNzAsImV4cCI6MTcwMDkzNjk3MH0.Pr2wv-VtvTqShHjsvDfyjjHXYRDrf1a4n8lgopijMIE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{awsBaseUrl}}/verify",
+					"host": [
+						"{{awsBaseUrl}}"
+					],
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Orders by Device ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceID\": \"312904901232\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{awsBaseUrl}}/getallorders",
+					"host": [
+						"{{awsBaseUrl}}"
+					],
+					"path": [
+						"getallorders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New Order to Device ID",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceID\": \"312904901232\",\r\n    \"itemName\": \"shoope2\",\r\n    \"shopName\": \"shoope2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{awsBaseUrl}}/neworder",
+					"host": [
+						"{{awsBaseUrl}}"
+					],
+					"path": [
+						"neworder"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
