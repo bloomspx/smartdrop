@@ -8,6 +8,7 @@ import time as t
 import json
 from config import *
 
+
 """
 Publish to an MQTT topic
 """
@@ -25,7 +26,7 @@ def subscribeToIOTCore(mqtt_connection, topic, callback):
     print("Subscribing to topic: " + topic)
     subscribe_future, packet_id = mqtt_connection.subscribe(
         topic=topic,
-        qos=mqtt.QoS.AT_LEAST_ONCE,
+        qos=mqtt.QoS.AT_MOST_ONCE,
         callback=callback
     )
     subscribe_result = subscribe_future.result()

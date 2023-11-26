@@ -11,19 +11,28 @@ import time
 import json
 
 # Local Imports
-from config import *
+import config
 from pubsub import *
-received_payload = None
 
+received_payload = None
 # Callback when the subscribed topic receives a message
-def on_message_received(topic, payload, dup, qos, retain, **kwargs):
+def on_passcode_message_received(topic, payload, dup, qos, retain, **kwargs):
     global received_payload
     received_payload = payload
     print("Received message from topic '{}': {}".format(topic, payload))
+    
+
+# Callback when the subscribed topic receives a message
+def on_take_photo_message_received(topic, payload, dup, qos, retain, **kwargs):
+    global received_payload
+    received_payload = payload
+    print("Received message from topic '{}': {}".format(topic, payload))
+    return
+    
 
 def subscribe_to_validate_topic(mqtt_connection):
     SUB_TOPIC = AWS_VALIDATED_TOPIC
-    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_message_received)
+    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_passcode_message_received)
 
 def publish_to_validate_topic(mqtt_connection, payload):
     PUB_TOPIC = AWS_VALIDATE_TOPIC
@@ -31,7 +40,7 @@ def publish_to_validate_topic(mqtt_connection, payload):
 
 def subscribe_to_take_photo_topic(mqtt_connection):
     SUB_TOPIC = ESP32_PHOTO_UPLOADED_TOPIC
-    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_message_received)
+    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_take_photo_message_received)
 
 def publish_to_take_photo_topic(mqtt_connection, payload):
     PUB_TOPIC = ESP32_TAKE_PHOTO_TOPIC
@@ -50,12 +59,16 @@ def format_take_photo_payload(deviceID, passcode):
     }
 
 # Helper function to decode byte array to JSON
-def decodePayload(payload):
+def decode_payload(payload):
     return json.loads(payload.decode('utf-8'))
 
-# Helper function to validate the payload
-def validatePayload(payload):
+# Helper function to validate the passcode payload
+def validate_passcode_payload(payload):
     return payload["isValidated"]
+
+# Helper function to validate the take photo payload
+def validate_take_photo_payload(payload):
+    return payload["imageURL"] != None
 
 def aws_setup():
     # Create a MQTT connection 
@@ -64,8 +77,13 @@ def aws_setup():
     subscribe_to_take_photo_topic(mqtt_connection)
     return mqtt_connection
 
-async def wait_for_received_payload():
+def invalidate_payload():
+    global received_payload
+    received_payload = None
+
+def wait_for_received_payload():
     global received_payload
     while received_payload is None:
-        await asyncio.sleep(0.1)
+        time.sleep(0.5)
+        print("Waiting for received payload")
     return received_payload
