@@ -3,8 +3,11 @@
 # keypad, the input is reset. If the user
 # hits the A-Button, the input is checked.
 
+from enum import Enum
 import RPi.GPIO as GPIO
 import time
+
+######## CONSTANTS ########
 
 # These are the GPIO pin numbers where the
 # lines of the keypad matrix are connected
@@ -12,23 +15,33 @@ L1 = 5
 L2 = 6
 L3 = 13
 L4 = 19
-
 # These are the four columns
 C1 = 12
 C2 = 16
 C3 = 20
 
+LockPin = 18
+LimitSwitchPin = 23
+
+class State(Enum):
+    LOCKED = 1
+    UNLOCKED = 2
+    
 # The GPIO pin of the column of the key that is currently
 # being held down or -1 if no key is pressed
 keypadPressed = -1
 
 secretCode = "4789"
+lockCode = "1234"
 input = ""
+state = State.LOCKED
 
 # Setup GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-
+GPIO.setup(LimitSwitchPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+switch_state = GPIO.input(LimitSwitchPin)
+prev_switch_state = switch_state
 GPIO.setup(L1, GPIO.OUT)
 GPIO.setup(L2, GPIO.OUT)
 GPIO.setup(L3, GPIO.OUT)
@@ -38,20 +51,7 @@ GPIO.setup(L4, GPIO.OUT)
 GPIO.setup(C1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(C2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-# # This callback registers the key that was pressed
-# # if no other key is currently pressed
-# def keypadCallback(channel):
-#     global keypadPressed
-#     if keypadPressed == -1:
-#         keypadPressed = channel
-
-# # Detect the rising edges on the column lines of the
-# # keypad. This way, we can detect if the user presses
-# # a button when we send a pulse.
-# GPIO.add_event_detect(C1, GPIO.RISING, callback=keypadCallback)
-# GPIO.add_event_detect(C2, GPIO.RISING, callback=keypadCallback)
-# GPIO.add_event_detect(C3, GPIO.RISING, callback=keypadCallback)
+GPIO.setup(LockPin, GPIO.OUT)
 
 # Sets all lines to a specific state. This is a helper
 # for detecting when the user releases a button
@@ -77,7 +77,10 @@ def checkSpecialKeys():
         print(input)
         if input == secretCode:
             print("Code correct!")
-            # TODO: Unlock a door, turn a light on, etc.
+            unlock()
+        elif input == lockCode:
+            print("Code correct!")
+            lock()
         else:
             print("Incorrect code!")
             # TODO: Sound an alarm, send an email, etc.
@@ -87,6 +90,14 @@ def checkSpecialKeys():
     GPIO.output(L4, GPIO.LOW)
     return pressed
 
+def unlock():
+    global state
+    state = State.UNLOCKED
+    GPIO.output(18, 1)
+
+def lock():
+    GPIO.output(18, 0)
+    
 # reads the columns and appends the value, that corresponds
 # to the button, to a variable
 def readLine(line, characters):
@@ -104,6 +115,21 @@ def readLine(line, characters):
 
 try:
     while True:
+        switch_state = GPIO.input(LimitSwitchPin)
+        # Check if the button state has changed
+        print(switch_state)
+        if switch_state != prev_switch_state:
+            if switch_state == GPIO.HIGH:
+                print("The limit switch: TOUCHED -> UNTOUCHED")
+            else:
+                print("The limit switch: UNTOUCHED -> TOUCHED")
+            prev_switch_state = switch_state
+
+
+        if switch_state == GPIO.HIGH:
+            print("The limit switch: UNTOUCHED")
+        else:
+            print("The limit switch: TOUCHED")
         print(input)
         # If a button was previously pressed,
         # check, whether the user has released it yet
@@ -123,5 +149,6 @@ try:
                 time.sleep(0.1)
             else:
                 time.sleep(0.1)
+
 except KeyboardInterrupt:
     print("\nApplication stopped!")
