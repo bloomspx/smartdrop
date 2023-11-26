@@ -47,6 +47,9 @@ limit_switch_state = LimitSwitchState.CLOSED
 keypadPressed = -1
 switch_state = 1
 prev_switch_state = -1
+device_id = "simple_id"
+most_recent_keyed_in_passcode = ""
+mqtt_connection = None
 
 ########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
@@ -62,7 +65,7 @@ def lock():
     GPIO.output(18, 0)
 
 # Setup GPIO
-def setup():
+def hardware_setup():
     global switch_state
     global prev_switch_state
     GPIO.setwarnings(False)
@@ -117,7 +120,9 @@ def backspace():
 def confirm_passcode():
     global user_input
     global process_state
-    validate_payload = format_validate_payload(deviceID, user_input)
+    global most_recent_keyed_in_passcode
+    global mqtt_connection
+    validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
     received_payload = wait_for_received_payload()
     if received_payload:
@@ -137,8 +142,10 @@ def confirm_passcode():
 ## TAKINGORDERPICTURES ##
 def taking_order_picture():
     global process_state
+    global most_recent_keyed_in_passcode
+    global mqtt_connection
     # AWS PUB take photo and receive confirmation from MQTT here
-    take_photo_payload = format_take_photo_payload(deviceID, most_recent_keyed_in_passcode)
+    take_photo_payload = format_take_photo_payload(device_id, most_recent_keyed_in_passcode)
     publish_to_take_photo_topic(mqtt_connection, take_photo_payload)
     received_payload = wait_for_received_payload()
     if received_payload:
@@ -149,7 +156,6 @@ def taking_order_picture():
             print("Picture not taken")
             print("Please press # to take picture")
     invalidate_payload()
-    user_input = ""
 
 def invalidate_asterisk_at_photo_state():
     global process_state
@@ -170,8 +176,10 @@ def confirm_no_more_orders():
 def key_in_additional_orders():
     global user_input
     global process_state
+    global most_recent_keyed_in_passcode
+    global mqtt_connection
     # AWS PUB passcode and receive confirmation from MQTT here
-    validate_payload = format_validate_payload(deviceID, user_input)
+    validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
     received_payload = wait_for_received_payload()
     if received_payload:
@@ -248,7 +256,7 @@ def keypad_input(hash_func, asterisk_func):
         time.sleep(0.1)
 
 ########################################## MAIN STATE MACHINE ##########################################
-def state_machine():
+def state_machine(mqtt_connection):
     global lock_state
     global process_state
     global keypadPressed
@@ -279,22 +287,24 @@ def state_machine():
 ########################################## MAIN DRIVER FUNCTIOn ##########################################
 if __name__ == "__main__":
     try:
-        setup()
-        while True:
-            switch_state = GPIO.input(LimitSwitchPin)
-            if switch_state != prev_switch_state:
-                if switch_state == 0:
-                    limit_switch_state = LimitSwitchState.CLOSED
-                else:
-                    limit_switch_state = LimitSwitchState.OPEN
-                prev_switch_state = switch_state
-            state_machine()
-            print("-------------------------------------------------")
-            print("User input: " + user_input)
-            print("Lock state: " + str(lock_state))
-            print("Process state: " + str(process_state))
-            print("Limit switch state: " + str(limit_switch_state))
-            print("-------------------------------------------------")
+        hardware_setup()
+        mqtt_connection = aws_setup()
+        if mqtt_connection:
+            while True:
+                switch_state = GPIO.input(LimitSwitchPin)
+                if switch_state != prev_switch_state:
+                    if switch_state == 0:
+                        limit_switch_state = LimitSwitchState.CLOSED
+                    else:
+                        limit_switch_state = LimitSwitchState.OPEN
+                    prev_switch_state = switch_state
+                state_machine(mqtt_connection)
+                print("-------------------------------------------------")
+                print("User input: " + user_input)
+                print("Lock state: " + str(lock_state))
+                print("Process state: " + str(process_state))
+                print("Limit switch state: " + str(limit_switch_state))
+                print("-------------------------------------------------")
     except KeyboardInterrupt:
         GPIO.cleanup()
         print("Program ended")
