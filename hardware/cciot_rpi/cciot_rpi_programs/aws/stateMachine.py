@@ -457,10 +457,16 @@ def state_machine(ctk):
 app = ctkApp()
 
 def myMainLoop():
+    global switch_state
+    global prev_switch_state
+    global mqtt_connection
+    global device_id
+    global process_state
+    global lock_state
+    global user_input
     mqtt_connection = aws_setup()
     hardware_setup()
     device_id = getSerial()
-    print(device_id)
     if mqtt_connection and device_id:
         while True:
             switch_state = GPIO.input(LimitSwitchPin)
