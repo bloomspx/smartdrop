@@ -247,7 +247,7 @@ def keypad_input(hash_func, asterisk_func):
     else:
         time.sleep(0.1)
 
-########################################## MAIN STATE MACHINE ##########################################
+########################################## MAIN STATE MACHINE 1
 def state_machine():
     global lock_state
     global process_state
