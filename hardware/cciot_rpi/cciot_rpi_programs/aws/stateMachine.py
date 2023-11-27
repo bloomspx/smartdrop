@@ -128,7 +128,7 @@ class ctkApp(customtkinter.CTk):
         self.close_box_frame.grid_forget()
 
     def select_frame_by_name(self, name):
-        print("select_frame_by_name:" + name)
+        print("select_frame_by_name:" + str(name))
         # set button color for selected button
         self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == ProcessState.START_DELIVERY_SEQUENCE else "transparent")
         self.start_delivery_label.configure(text_color=("gray10", "gray90")if name == ProcessState.START_DELIVERY_SEQUENCE else ("gray10", "gray40"))
