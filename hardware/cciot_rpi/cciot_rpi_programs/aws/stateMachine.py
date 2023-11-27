@@ -435,6 +435,7 @@ def state_machine(ctk):
     global process_state
     global keypadPressed
     global curr_process_state
+    global curr_user_input
     if keypadPressed != -1:
         setAllLines(GPIO.HIGH)
         if GPIO.input(keypadPressed) == 0:
@@ -486,9 +487,6 @@ def check_change_of_input():
         return True
     return False
     
-def check_change_of_input():
-    global user_input
-    
 def myMainLoop():
     global switch_state
     global prev_switch_state
@@ -519,7 +517,11 @@ def myMainLoop():
         print("Changing state to: " + str(curr_process_state))
         app.select_frame_by_name(curr_process_state)
     else:
+        print("ELSE")
         if process_state == ProcessState.WAITINGTOUNLOCKBOX or process_state == ProcessState.KEYINGINORDERS:
+            print("keying states")
+            print(prev_user_input)
+            print(curr_user_input)
             if check_change_of_input():
                 print("Changing input to: " + str(curr_user_input))
                 app.select_frame_by_name(curr_process_state, curr_user_input)
