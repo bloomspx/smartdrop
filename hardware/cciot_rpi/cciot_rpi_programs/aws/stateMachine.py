@@ -157,7 +157,7 @@ class ctkApp(customtkinter.CTk):
             self.photo_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.CONFIRMINGMOREORDERS:
             self.forget_all_frames()
-            self.check_more_delivery_frame.grid(row=0, coslumn=1, sticky="nsew", padx=60, pady=100)
+            self.check_more_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOLOCKBOX:
             self.forget_all_frames()
             self.close_box_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
