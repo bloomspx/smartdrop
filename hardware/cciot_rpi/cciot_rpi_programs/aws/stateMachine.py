@@ -141,20 +141,20 @@ class ctkApp(customtkinter.CTk):
         self.close_box_label.configure(text_color=("gray10", "gray90") if name == "step_5" else ("gray10", "gray40"))
 
         # show selected frame
-        if name == "step_1":
+        if name == ProcessState.START_DELIVERY_SEQUENCE:
             self.forget_all_frames()
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
             self.mainloop
-        if name == "step_2":
+        if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGORDERS:
             self.forget_all_frames()
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
-        if name == "step_3":
+        if name == ProcessState.TAKINGORDERPICTURE:
             self.forget_all_frames()
             self.photo_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
-        if name == "step_4":
+        if name == ProcessState.CONFIRMINGMOREORDERS:
             self.forget_all_frames()
             self.check_more_delivery_frame.grid(row=0, coslumn=1, sticky="nsew", padx=60, pady=100)
-        if name == "step_5":
+        if name == ProcessState.WAITINGTOLOCKBOX:
             self.forget_all_frames()
             self.close_box_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
 
@@ -204,6 +204,8 @@ prev_switch_state = -1
 device_id = "simple_id"
 most_recent_keyed_in_passcode = ""
 mqtt_connection = None
+prev_process_state = ProcessState.START_DELIVERY_SEQUENCE
+curr_process_state = ProcessState.START_DELIVERY_SEQUENCE
 
 ########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
@@ -421,10 +423,13 @@ def keypad_input(hash_func, asterisk_func):
         readLine(L3, ["7","8","9"])
         readLine(L4, ["*","0","#"])
 
+
 def state_machine(ctk):
     global lock_state
     global process_state
     global keypadPressed
+    global curr_process_state
+    curr_process_state = process_state
     if keypadPressed != -1:
         setAllLines(GPIO.HIGH)
         if GPIO.input(keypadPressed) == 0:
@@ -434,29 +439,38 @@ def state_machine(ctk):
             print("Press # to start delivery sequence")
             keypad_input(hash_func=start_delivery_sequence, asterisk_func=invalid_asterisk_at_start_state)
         elif process_state == ProcessState.WAITINGTOUNLOCKBOX and lock_state == LockState.LOCKED:
-            ctk.select_frame_by_name("step_2")
+            # ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=confirm_passcode, asterisk_func=backspace)
         elif process_state == ProcessState.TAKINGORDERPICTURE:
-            ctk.select_frame_by_name("step_3")
+            # ctk.select_frame_by_name("step_3")
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
         elif process_state == ProcessState.CONFIRMINGMOREORDERS:
-            ctk.select_frame_by_name("step_4")
+            # ctk.select_frame_by_name("step_4")
             keypad_input(hash_func=confirm_more_orders, asterisk_func=confirm_no_more_orders)
         elif process_state == ProcessState.KEYINGINORDERS:
-            ctk.select_frame_by_name("step_2")
+            # ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=key_in_additional_orders, asterisk_func=start_locking_sequence)
         # elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
         #     print("Please press # to confirm locking sequence. Press * to return to keying in orders")
         #     keypad_input(hash_func=confirm_lock_sequence, asterisk_func=return_to_keying_in_orders)
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
-            ctk.select_frame_by_name("step_5")
+            # ctk.select_frame_by_name("step_5")
             lock_box()
-            ctk.select_frame_by_name("step_1")
+            # ctk.select_frame_by_name("step_1")
 
 
 app = ctkApp()
 mqtt_connection = aws_setup()
 hardware_setup()
+
+def check_change_of_state:
+    global prev_process_state
+    global curr_process_state
+    if prev_process_state != curr_process_state:
+        prev_process_state = curr_process_state
+        return True
+    return False
+    
 
 def myMainLoop():
     global switch_state
@@ -487,6 +501,8 @@ def myMainLoop():
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
+if check_change_of_state():
+    ctk.select_frame_by_name(curr_process_state)
 app.mainloop()
 
 
