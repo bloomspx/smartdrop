@@ -206,6 +206,8 @@ most_recent_keyed_in_passcode = ""
 mqtt_connection = None
 prev_process_state = ProcessState.START_DELIVERY_SEQUENCE
 curr_process_state = ProcessState.START_DELIVERY_SEQUENCE
+prev_user_input = user_input
+curr_user_input = user_input
 
 ########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
@@ -457,6 +459,7 @@ def state_machine(ctk):
             lock_box()
             # ctk.select_frame_by_name("step_1")
         curr_process_state = process_state
+        curr_user_input = user_input
 
 
 app = ctkApp()
@@ -470,8 +473,18 @@ def check_change_of_state():
         prev_process_state = curr_process_state
         return True
     return False
-    
 
+def check_change_of_input():
+    global prev_user_input
+    global curr_user_input
+    if prev_user_input != curr_user_input:
+        prev_user_input = curr_process_input
+        return True
+    return False
+    
+def check_change_of_input():
+    global user_input
+    
 def myMainLoop():
     global switch_state
     global prev_switch_state
