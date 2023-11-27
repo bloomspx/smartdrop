@@ -464,6 +464,7 @@ def myMainLoop():
     global process_state
     global lock_state
     global user_input
+    global limit_switch_state
     global app
     mqtt_connection = aws_setup()
     hardware_setup()
