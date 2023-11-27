@@ -499,7 +499,7 @@ def myMainLoop():
         print("Limit switch state: " + str(limit_switch_state))
         print("-------------------------------------------------")
     if check_change_of_state():
-        print("Changing state to: " + curr_process_state)
+        print("Changing state to: " + str(curr_process_state))
         app.select_frame_by_name(curr_process_state)
     app.after(100, myMainLoop)
 
