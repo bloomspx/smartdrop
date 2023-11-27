@@ -518,6 +518,11 @@ def myMainLoop():
     if check_change_of_state():
         print("Changing state to: " + str(curr_process_state))
         app.select_frame_by_name(curr_process_state)
+    else:
+        if process_state == ProcessState.WAITINGTOUNLOCKBOX or process_state == ProcessState.KEYINGINORDERS:
+            if check_change_of_input():
+                print("Changing input to: " + str(curr_user_input))
+                app.select_frame_by_name(curr_process_state)
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
