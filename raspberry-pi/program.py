@@ -46,6 +46,7 @@ class ctkApp(customtkinter.CTk):
 
         # Set GUI title
         self.title("Smart Delivery System")
+        self.set_appearance_mode("dark")
 
         # Get screen width and height
         width= self.winfo_screenwidth() 
@@ -59,9 +60,9 @@ class ctkApp(customtkinter.CTk):
         self.limit_switch_state = LimitSwitchState.CLOSED
 
         # Load images
-        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
-        self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "delivery-man.png")), size=(50, 50))
-        self.package_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "package.png")), size=(75, 75))
+        # image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
+        # self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "delivery-man.png")), size=(50, 50))
+        # self.package_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "package.png")), size=(75, 75))
 
         # Set main grid layout 1x2
         # 1st column is for navigation frame
