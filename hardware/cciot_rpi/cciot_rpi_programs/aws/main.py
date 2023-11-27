@@ -118,6 +118,7 @@ def backspace():
 
 # Confirm user input func
 def confirm_passcode():
+    global most_recent_keyed_in_passcode
     global user_input
     global process_state
     global most_recent_keyed_in_passcode
@@ -255,8 +256,7 @@ def keypad_input(hash_func, asterisk_func):
     else:
         time.sleep(0.1)
 
-########################################## MAIN STATE MACHINE ##########################################
-def state_machine(mqtt_connection):
+def state_machine():
     global lock_state
     global process_state
     global keypadPressed
@@ -287,8 +287,8 @@ def state_machine(mqtt_connection):
 ########################################## MAIN DRIVER FUNCTIOn ##########################################
 if __name__ == "__main__":
     try:
-        hardware_setup()
         mqtt_connection = aws_setup()
+        hardware_setup()
         if mqtt_connection:
             while True:
                 switch_state = GPIO.input(LimitSwitchPin)
@@ -298,7 +298,7 @@ if __name__ == "__main__":
                     else:
                         limit_switch_state = LimitSwitchState.OPEN
                     prev_switch_state = switch_state
-                state_machine(mqtt_connection)
+                state_machine()
                 print("-------------------------------------------------")
                 print("User input: " + user_input)
                 print("Lock state: " + str(lock_state))
