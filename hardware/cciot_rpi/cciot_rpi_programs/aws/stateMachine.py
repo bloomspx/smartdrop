@@ -468,7 +468,7 @@ def myMainLoop():
     global app
     mqtt_connection = aws_setup()
     hardware_setup()
-    device_id = getSerial()
+    # device_id = getSerial()
     if mqtt_connection and device_id:
         switch_state = GPIO.input(LimitSwitchPin)
         if switch_state != prev_switch_state:
