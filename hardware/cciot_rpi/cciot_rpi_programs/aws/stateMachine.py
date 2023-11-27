@@ -299,7 +299,7 @@ def confirm_passcode():
     global process_state
     global most_recent_keyed_in_passcode
     global mqtt_connection
-    if len(user_input != 6):
+    if len(user_input) != 6:
         validate_payload = format_validate_payload(device_id, user_input)
         publish_to_validate_topic(mqtt_connection, validate_payload)
         received_payload = wait_for_received_payload()
