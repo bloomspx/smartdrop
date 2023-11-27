@@ -463,7 +463,7 @@ app = ctkApp()
 mqtt_connection = aws_setup()
 hardware_setup()
 
-def check_change_of_state:
+def check_change_of_state():
     global prev_process_state
     global curr_process_state
     if prev_process_state != curr_process_state:
