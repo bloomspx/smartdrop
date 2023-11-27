@@ -1,7 +1,7 @@
 from enum import Enum
 import RPi.GPIO as GPIO
 from aws_helper import *
-import time
+from gui import *
 
 
 class LockState(Enum):
@@ -212,7 +212,7 @@ def start_locking_sequence():
     global process_state
     global user_input
     if len(user_input) == 0:
-        process_state = ProcessState.CONFIRMLOCKSEQUENCE
+        process_state = ProcessState.WAITINGTOLOCKBOX
     else:
         user_input = user_input[:-1]
     return
@@ -266,11 +266,8 @@ def keypad_input(hash_func, asterisk_func):
         readLine(L2, ["4","5","6"])
         readLine(L3, ["7","8","9"])
         readLine(L4, ["*","0","#"])
-        time.sleep(0.1)
-    else:
-        time.sleep(0.1)
 
-def state_machine():
+def state_machine(ctk):
     global lock_state
     global process_state
     global keypadPressed
@@ -278,25 +275,29 @@ def state_machine():
         setAllLines(GPIO.HIGH)
         if GPIO.input(keypadPressed) == 0:
             keypadPressed = -1
-        else:
-            time.sleep(0.1)
     else:
         if process_state == ProcessState.START_DELIVERY_SEQUENCE:
             print("Press # to start delivery sequence")
             keypad_input(hash_func=start_delivery_sequence, asterisk_func=invalid_asterisk_at_start_state)
         elif process_state == ProcessState.WAITINGTOUNLOCKBOX and lock_state == LockState.LOCKED:
+            ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=confirm_passcode, asterisk_func=backspace)
         elif process_state == ProcessState.TAKINGORDERPICTURE:
+            ctk.select_frame_by_name("step_3")
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
         elif process_state == ProcessState.CONFIRMINGMOREORDERS:
+            ctk.select_frame_by_name("step_4")
             keypad_input(hash_func=confirm_more_orders, asterisk_func=confirm_no_more_orders)
         elif process_state == ProcessState.KEYINGINORDERS:
+            ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=key_in_additional_orders, asterisk_func=start_locking_sequence)
-        elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
-            print("Please press # to confirm locking sequence. Press * to return to keying in orders")
-            keypad_input(hash_func=confirm_lock_sequence, asterisk_func=return_to_keying_in_orders)
+        # elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
+        #     print("Please press # to confirm locking sequence. Press * to return to keying in orders")
+        #     keypad_input(hash_func=confirm_lock_sequence, asterisk_func=return_to_keying_in_orders)
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
+            ctk.select_frame_by_name("step_5")
             lock_box()
+            ctk.select_frame_by_name("step_1")
 
 ########################################## MAIN DRIVER FUNCTIOn ##########################################
 if __name__ == "__main__":
@@ -305,6 +306,7 @@ if __name__ == "__main__":
         hardware_setup()
         device_id = getSerial()
         print(device_id)
+        ctk = gui.ctkApp()
         if mqtt_connection and device_id:
             while True:
                 switch_state = GPIO.input(LimitSwitchPin)
@@ -314,7 +316,7 @@ if __name__ == "__main__":
                     else:
                         limit_switch_state = LimitSwitchState.OPEN
                     prev_switch_state = switch_state
-                state_machine()
+                state_machine(ctk)
                 print("-------------------------------------------------")
                 print("User input: " + user_input)
                 print("Lock state: " + str(lock_state))
