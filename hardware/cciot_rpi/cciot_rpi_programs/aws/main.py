@@ -97,6 +97,20 @@ def readLine(line, characters):
         user_input = user_input + characters[2]
     GPIO.output(line, GPIO.LOW)
 
+# Get hardware provisioned RPI ID
+def getSerial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+  return cpuserial
+
 ########################################## STATE SPECIFIC FUNCTIONS ##########################################\
 ## START DELIVERY SEQUENCE ##
 def start_delivery_sequence():
@@ -289,7 +303,9 @@ if __name__ == "__main__":
     try:
         mqtt_connection = aws_setup()
         hardware_setup()
-        if mqtt_connection:
+        device_id = getSerial()
+        print(device_id)
+        if mqtt_connection and device_id:
             while True:
                 switch_state = GPIO.input(LimitSwitchPin)
                 if switch_state != prev_switch_state:
