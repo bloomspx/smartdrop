@@ -85,11 +85,7 @@ class ctkApp(customtkinter.CTk):
         self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode",
                                     text_color=("gray10", "CadetBlue1"),
                                     font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-        self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
-                            text_color=("gray10", "CadetBlue1"),
-                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
         self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
-        self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.6, anchor="center")
         self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)         
         # create photo frame
         self.photo_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
@@ -131,7 +127,7 @@ class ctkApp(customtkinter.CTk):
         self.check_more_delivery_frame.grid_forget()
         self.close_box_frame.grid_forget()
 
-    def select_frame_by_name(self, name):
+    def select_frame_by_name(self, name, user_input=""):
         print("select_frame_by_name:" + str(name))
         # set button color for selected button
         self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == ProcessState.START_DELIVERY_SEQUENCE else "transparent")
@@ -151,6 +147,10 @@ class ctkApp(customtkinter.CTk):
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
             self.forget_all_frames()
+            self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
+                    text_color=("gray10", "CadetBlue1"),
+                    font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+            self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.6, anchor="center")
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.TAKINGORDERPICTURE:
             self.forget_all_frames()
@@ -482,7 +482,7 @@ def check_change_of_input():
     global prev_user_input
     global curr_user_input
     if prev_user_input != curr_user_input:
-        prev_user_input = curr_process_input
+        prev_user_input = curr_user_input
         return True
     return False
     
@@ -522,7 +522,7 @@ def myMainLoop():
         if process_state == ProcessState.WAITINGTOUNLOCKBOX or process_state == ProcessState.KEYINGINORDERS:
             if check_change_of_input():
                 print("Changing input to: " + str(curr_user_input))
-                app.select_frame_by_name(curr_process_state)
+                app.select_frame_by_name(curr_process_state, curr_user_input)
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
