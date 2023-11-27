@@ -299,21 +299,22 @@ def confirm_passcode():
     global process_state
     global most_recent_keyed_in_passcode
     global mqtt_connection
-    validate_payload = format_validate_payload(device_id, user_input)
-    publish_to_validate_topic(mqtt_connection, validate_payload)
-    received_payload = wait_for_received_payload()
-    if received_payload:
-        if validate_passcode_payload(decode_payload(received_payload)):
-        # if user_input in passcode:
-            print("Correct passcode")
-            unlock()
-            most_recent_keyed_in_passcode = user_input
-            process_state = ProcessState.TAKINGORDERPICTURE
-        else:
-            lock()
-            print("Incorrect passcode, please key in again")
-        invalidate_payload()
-    user_input = ""
+    if len(user_input != 6):
+        validate_payload = format_validate_payload(device_id, user_input)
+        publish_to_validate_topic(mqtt_connection, validate_payload)
+        received_payload = wait_for_received_payload()
+        if received_payload:
+            if validate_passcode_payload(decode_payload(received_payload)):
+            # if user_input in passcode:
+                print("Correct passcode")
+                unlock()
+                most_recent_keyed_in_passcode = user_input
+                process_state = ProcessState.TAKINGORDERPICTURE
+            else:
+                lock()
+                print("Incorrect passcode, please key in again")
+            invalidate_payload()
+        user_input = ""
     return
 
 ## TAKINGORDERPICTURES ##
