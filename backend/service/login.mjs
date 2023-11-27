@@ -1,4 +1,4 @@
-import { DynamoDB, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDB, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { buildResponse }from "../utils/utils.mjs";
 import { generateToken } from '../utils/auth.mjs';
 import bcrypt from "bcryptjs";

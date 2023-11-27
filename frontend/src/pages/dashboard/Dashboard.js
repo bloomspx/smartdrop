@@ -1,6 +1,6 @@
 import './dashboard.css'
 import { useNavigate } from "react-router-dom";
-import { getOrders, getUser, resetUserSession } from "../../service/AuthService"
+import { getUser, resetUserSession } from "../../service/AuthService"
 import { useState } from 'react';
 
 const Dashboard = () => {

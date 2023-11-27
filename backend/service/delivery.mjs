@@ -1,4 +1,4 @@
-import { DynamoDB, PutItemCommand, QueryCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDB, PutItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { buildResponse }from "../utils/utils.mjs";
 
 const client = new DynamoDB ({region: 'ap-southeast-1'});
@@ -43,41 +43,6 @@ export async function newOrder(order) {
     return buildResponse(200, saveOrderResponse);
 }
 
-export async function updateOrder(order) {
-    const {deviceID, passcode} = order;
-
-    try {
-        const oldOrder = await getOrder(deviceID, passcode);
-        console.log(oldOrder, !oldOrder)
-        if (!oldOrder) {
-            return buildResponse(401, {message: "Wrong Passcode"})
-        }
-        // update isDelivered status + deliveredDate
-        const params = {
-            TableName: orderTable,
-            Key: {
-                deviceID: { S: deviceID },
-                passcode: { S: passcode },
-            },
-            UpdateExpression: 'SET isDelivered = :isDelivered, deliveredDate = :deliveredDate',
-            ExpressionAttributeValues: {
-                ':isDelivered': { BOOL: true },
-                ':deliveredDate': { S: new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }) },
-            },
-            ReturnValues: 'ALL_NEW',
-        };
-
-        const updateCommand = new UpdateItemCommand(params);
-        const response = await client.send(updateCommand);
-        
-        console.log('Order updated successfully:', response.Attributes);
-        return buildResponse(200, response.Attributes)
-    } catch (error) {
-        console.error('updateOrder error:', error.message);
-        return false;
-    }
-}
-
 async function saveOrder(deviceID, itemName, shopName) {
     try {
         const passcode = generateRandomCode();
@@ -99,7 +64,7 @@ async function saveOrder(deviceID, itemName, shopName) {
                 passcode: { S: passcode },
                 itemName: { S: itemName },
                 shopName: { S: shopName }, 
-                orderDate: { S: new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }) },
+                orderDate: { S: new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })},
                 isDelivered: { BOOL: false },
                 imageURL: { S: "" },
                 deliveredDate: { S: "" },

@@ -49,6 +49,7 @@ switch_state = 1
 prev_switch_state = -1
 device_id = "simple_id"
 most_recent_keyed_in_passcode = ""
+mqtt_connection = None
 
 ########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
@@ -120,6 +121,8 @@ def confirm_passcode():
     global most_recent_keyed_in_passcode
     global user_input
     global process_state
+    global most_recent_keyed_in_passcode
+    global mqtt_connection
     validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
     received_payload = wait_for_received_payload()
@@ -141,6 +144,7 @@ def confirm_passcode():
 def taking_order_picture():
     global process_state
     global most_recent_keyed_in_passcode
+    global mqtt_connection
     # AWS PUB take photo and receive confirmation from MQTT here
     take_photo_payload = format_take_photo_payload(device_id, most_recent_keyed_in_passcode)
     publish_to_take_photo_topic(mqtt_connection, take_photo_payload)
@@ -153,7 +157,6 @@ def taking_order_picture():
             print("Picture not taken")
             print("Please press # to take picture")
     invalidate_payload()
-    user_input = ""
 
 def invalidate_asterisk_at_photo_state():
     global process_state
@@ -175,6 +178,7 @@ def key_in_additional_orders():
     global user_input
     global process_state
     global most_recent_keyed_in_passcode
+    global mqtt_connection
     # AWS PUB passcode and receive confirmation from MQTT here
     validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
@@ -252,7 +256,6 @@ def keypad_input(hash_func, asterisk_func):
     else:
         time.sleep(0.1)
 
-########################################## MAIN STATE MACHINE 1
 def state_machine():
     global lock_state
     global process_state

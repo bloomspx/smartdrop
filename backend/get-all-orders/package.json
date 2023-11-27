@@ -1,0 +1,9 @@
+{
+    "name": "smart-locker-get-all-orders",
+    "author": "bloomspx",
+    "version": "1.0.0",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.450.0"
+    },
+    "type":"module"
+}

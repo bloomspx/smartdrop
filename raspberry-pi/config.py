@@ -7,7 +7,7 @@ PATH_TO_AMAZON_ROOT_CA_1 = "certificates/AmazonRootCA1.pem"
 
 # AWS MQTT Topics
 AWS_VALIDATE_TOPIC = "cciot/validate" #rpi pub, cloud iot core sub  - deviceID, passcode
-AWS_VALIDATED_TOPIC = "cciot/validated" #cloud iot core pub, rpi sub
+AWS_VALIDATED_TOPIC = "cciot/validated" #cloud iot core pub, rpi sub - deviceID, passcode, isValidated
 ESP32_TAKE_PHOTO_TOPIC = "cciot/take-photo" #rpi pub, esp32 sub - deviceID, passcode
 ESP32_PHOTO_UPLOADED_TOPIC = "cciot/photo-uploaded" #esp32 pub, rpi sub
 ESP32_PUBLISH_PHOTO_TOPIC = "cciot/publish-photo" #esp32 pub, cloud iot core sub - imageURL, deviceID, passcode

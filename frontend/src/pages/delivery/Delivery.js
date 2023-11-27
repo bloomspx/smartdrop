@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { getOrders, getUser } from "../../service/AuthService"
+import { getUser, BACKEND_API_ADDRESS, API_KEY } from "../../service/AuthService"
 import { useState } from 'react';
 import axios from "axios";
 
-const addDeliveryUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/newdelivery';
+const addDeliveryUrl = BACKEND_API_ADDRESS + 'neworder';
 
 const Delivery = () => {
 
@@ -22,12 +22,12 @@ const Delivery = () => {
         
         const requestConfig = {
             headers: {
-                'x-api-key': '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
+                'x-api-key': API_KEY
             }
         }
 
         const requestBody = {
-            phoneNumber: user.phoneNumber,
+            deviceID: user.deviceID,
             itemName: itemName,
             shopName: shopName,
         }

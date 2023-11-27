@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_API_ADDRESS, API_KEY } from '../../service/AuthService';
 
-const registerUrl = 'https://teqt6xqjj5.execute-api.ap-southeast-1.amazonaws.com/beta/register';
+const registerUrl = BACKEND_API_ADDRESS + 'register';
 
 const Register = () => {
   // State variables for form fields
@@ -25,7 +26,7 @@ const Register = () => {
     
     const requestConfig = {
         headers: {
-            'x-api-key': '7gtRwFhD5g7wpTMA3Fbyk2CvXkoPZnJR67qFELR1'
+            'x-api-key': API_KEY
         }
     }
 
