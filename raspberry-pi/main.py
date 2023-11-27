@@ -16,11 +16,11 @@ from pubsub import *
 """
 RPI send device ID and passcode to AWS IOT Core for Authentication (Sean)
 """
-def validate(deviceId, passcode, imageURL=None):
+def validate(deviceID, passcode, imageURL=None):
     # Create a MQTT connection 
     mqtt_connection = connectToIOTCore()
     TOPIC = AWS_VALIDATE_TOPIC
-    PAYLOAD = {"deviceId" : deviceId, "passcode": passcode}
+    PAYLOAD = {"deviceID" : deviceID, "passcode": passcode}
     # Publish to the topic
     publishToIOTCore(mqtt_connection, TOPIC, PAYLOAD)
     # Disconnect
@@ -29,11 +29,11 @@ def validate(deviceId, passcode, imageURL=None):
 """
 RPI send device ID and passcode to ESP32 (Sean)
 """
-def takePhoto(deviceId, passcode):
+def takePhoto(deviceID, passcode):
     # Create a MQTT connection 
     mqtt_connection = connectToIOTCore()
     TOPIC = ESP32_TAKE_PHOTO_TOPIC
-    PAYLOAD = {"deviceId" : deviceId, "passcode": passcode}
+    PAYLOAD = {"deviceID" : deviceID, "passcode": passcode}
     # Publish to the topic
     publishToIOTCore(mqtt_connection, TOPIC, PAYLOAD)
     # Disconnect
@@ -42,11 +42,11 @@ def takePhoto(deviceId, passcode):
 """
 ESP32 send device ID, passcode and imageURL to AWS IOT Core to edit order in dynamoDB (Ryan)
 """
-def uploadPhoto(deviceId, passcode, imageURL):
+def uploadPhoto(deviceID, passcode, imageURL):
     # Create a MQTT connection 
     mqtt_connection = connectToIOTCore()
     TOPIC = ESP32_PUBLISH_PHOTO_TOPIC
-    PAYLOAD = {"deviceId" : deviceId, "passcode": passcode, "imageURL": imageURL}
+    PAYLOAD = {"deviceID" : deviceID, "passcode": passcode, "imageURL": imageURL}
     # Publish to the topic
     publishToIOTCore(mqtt_connection, TOPIC, PAYLOAD)
     # Disconnect

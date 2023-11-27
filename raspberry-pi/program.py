@@ -1,5 +1,4 @@
 from enum import Enum
-import time
 import customtkinter
 import os
 from PIL import Image
@@ -27,6 +26,19 @@ def unlock():
 def lock():
     global lock_state
     lock_state = LockState.LOCKED
+
+def getSerial():
+  # Extract serial from cpuinfo file
+  cpuserial = "0000000000000000"
+  try:
+    f = open('/proc/cpuinfo','r')
+    for line in f:
+      if line[0:6]=='Serial':
+        cpuserial = line[10:26]
+    f.close()
+  except:
+    cpuserial = "ERROR000000000"
+  return cpuserial
 
 class ctkApp(customtkinter.CTk):
     def __init__(self):
@@ -291,7 +303,8 @@ class ctkApp(customtkinter.CTk):
         #         print("Please close the door properly")
 
 
-
+deviceID = getSerial()
+print(deviceID)
 app = ctkApp()
 app.mainloop()
 
