@@ -498,11 +498,11 @@ def myMainLoop():
         print("Process state: " + str(process_state))
         print("Limit switch state: " + str(limit_switch_state))
         print("-------------------------------------------------")
+    if check_change_of_state():
+        app.select_frame_by_name(curr_process_state)
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
-if check_change_of_state():
-    ctk.select_frame_by_name(curr_process_state)
 app.mainloop()
 
 
