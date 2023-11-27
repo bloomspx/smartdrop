@@ -128,17 +128,18 @@ class ctkApp(customtkinter.CTk):
         self.close_box_frame.grid_forget()
 
     def select_frame_by_name(self, name):
+        print("select_frame_by_name:" + name)
         # set button color for selected button
-        self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == "step_1" else "transparent")
-        self.start_delivery_label.configure(text_color=("gray10", "gray90")if name == "step_1" else ("gray10", "gray40"))
-        self.enter_passcode_label.configure(fg_color=("gray30", "gray30")  if name == "step_2"  or name == "step_2_failed" else "transparent")
-        self.enter_passcode_label.configure(text_color=("gray10", "gray90") if name == "step_2" or name == "step_2_failed" else ("gray10", "gray40"))
-        self.photo_label.configure(fg_color=("turquoise4", "turquoise4")  if name == "step_3" else "transparent")
-        self.photo_label.configure(text_color=("gray10", "gray90") if name == "step_3"else ("gray10", "gray40"))
-        self.check_more_delivery_label.configure(fg_color=("turquoise4", "turquoise4")  if name == "step_4" else "transparent")
-        self.check_more_delivery_label.configure(text_color=("gray10", "gray90") if name == "step_4" else ("gray10", "gray40"))
-        self.close_box_label.configure(fg_color=("turquoise4", "turquoise4") if name == "step_5" else "transparent")
-        self.close_box_label.configure(text_color=("gray10", "gray90") if name == "step_5" else ("gray10", "gray40"))
+        self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == ProcessState.START_DELIVERY_SEQUENCE else "transparent")
+        self.start_delivery_label.configure(text_color=("gray10", "gray90")if name == ProcessState.START_DELIVERY_SEQUENCE else ("gray10", "gray40"))
+        self.enter_passcode_label.configure(fg_color=("gray30", "gray30")  if name == ProcessState.WAITINGTOUNLOCKBOX  or name == ProcessState.KEYINGINORDERS else "transparent")
+        self.enter_passcode_label.configure(text_color=("gray10", "gray90") if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS else ("gray10", "gray40"))
+        self.photo_label.configure(fg_color=("turquoise4", "turquoise4")  if name == ProcessState.TAKINGORDERPICTURE else "transparent")
+        self.photo_label.configure(text_color=("gray10", "gray90") if name == ProcessState.TAKINGORDERPICTURE else ("gray10", "gray40"))
+        self.check_more_delivery_label.configure(fg_color=("turquoise4", "turquoise4")  if name == ProcessState.CONFIRMINGMOREORDERS else "transparent")
+        self.check_more_delivery_label.configure(text_color=("gray10", "gray90") if name == ProcessState.CONFIRMINGMOREORDERS else ("gray10", "gray40"))
+        self.close_box_label.configure(fg_color=("turquoise4", "turquoise4") if name == ProcessState.WAITINGTOLOCKBOX else "transparent")
+        self.close_box_label.configure(text_color=("gray10", "gray90") if name == ProcessState.WAITINGTOLOCKBOX else ("gray10", "gray40"))
 
         # show selected frame
         if name == ProcessState.START_DELIVERY_SEQUENCE:
