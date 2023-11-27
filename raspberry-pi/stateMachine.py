@@ -1,6 +1,5 @@
 from enum import Enum
-import time
-import gui
+import program
 
 class LockState(Enum):
     LOCKED = 1
@@ -32,7 +31,7 @@ def lock():
     global lock_state
     lock_state = LockState.LOCKED
 
-def state_machine():
+def state_machine(ctk):
     global lock_state
     global process_state
     if process_state == ProcessState.START_DELIVERY_SEQUENCE:
@@ -96,6 +95,6 @@ def state_machine():
             print("Please close the door properly")
 
 
-ctk = gui.ctkApp()
+ctk = program.ctkApp()
 while True:
-    state_machine()
+    state_machine(ctk)
