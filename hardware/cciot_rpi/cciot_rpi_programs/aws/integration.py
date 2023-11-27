@@ -72,11 +72,12 @@ def hardware_setup():
 
 if __name__ == "__main__":
     try:
-        # mqtt_connection = aws_setup()
-        hardware_setup()
-        # device_id = getSerial()
-        print(device_id)
-        ctk = gui.ctkApp()
+        while True:
+            # mqtt_connection = aws_setup()
+            hardware_setup()
+            # device_id = getSerial()
+            print(device_id)
+            ctk = gui.ctkApp()
 
     except KeyboardInterrupt:
         GPIO.cleanup()
