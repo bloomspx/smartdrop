@@ -118,7 +118,7 @@ class ctkApp(customtkinter.CTk):
         self.close_box_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
 
         # select default frame
-        self.select_frame_by_name("step_1")
+        self.select_frame_by_name("START_DELIVERY_SEQUENCE")
 
     def forget_all_frames(self):
         self.start_delivery_frame.grid_forget()
