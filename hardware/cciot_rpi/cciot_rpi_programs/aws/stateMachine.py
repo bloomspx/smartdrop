@@ -145,7 +145,7 @@ class ctkApp(customtkinter.CTk):
             self.forget_all_frames()
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
             self.mainloop
-        if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGORDERS:
+        if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
             self.forget_all_frames()
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.TAKINGORDERPICTURE:
