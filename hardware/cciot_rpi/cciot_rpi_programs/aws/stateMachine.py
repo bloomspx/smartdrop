@@ -1,5 +1,5 @@
 from enum import Enum
-import program
+import gui
 
 class LockState(Enum):
     LOCKED = 1
@@ -94,7 +94,7 @@ def state_machine(ctk):
         else:
             print("Please close the door properly")
 
-
-ctk = program.ctkApp()
-while True:
-    state_machine(ctk)
+if __name__ == "__main__":
+    ctk = gui.ctkApp()
+    while True:
+        state_machine(ctk)

@@ -1,7 +1,7 @@
 from enum import Enum
 import RPi.GPIO as GPIO
 from aws_helper import *
-from gui import *
+import gui
 
 
 class LockState(Enum):
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     try:
         mqtt_connection = aws_setup()
         hardware_setup()
-        device_id = getSerial()
+        # device_id = getSerial()
         print(device_id)
         ctk = gui.ctkApp()
         if mqtt_connection and device_id:
