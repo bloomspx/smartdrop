@@ -195,7 +195,7 @@ LimitSwitchPin = 23
 
 user_input = ""
 lock_state = LockState.LOCKED
-process_state = ProcessState.WAITINGTOUNLOCKBOX
+process_state = ProcessState.START_DELIVERY_SEQUENCE
 passcodes = ["4789", "1234", "2345"]
 limit_switch_state = LimitSwitchState.CLOSED
 keypadPressed = -1
@@ -277,7 +277,7 @@ def invalid_asterisk_at_start_state():
     process_state = ProcessState.START_DELIVERY_SEQUENCE
 
 ## WAITINGTOUNLCOCKBOX ##
-# Backspace func
+# Backspace func 
 def backspace():
     global user_input
     if len(user_input)!=0:
