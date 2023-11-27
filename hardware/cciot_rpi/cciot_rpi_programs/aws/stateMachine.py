@@ -469,21 +469,20 @@ def myMainLoop():
     hardware_setup()
     device_id = getSerial()
     if mqtt_connection and device_id:
-        while True:
-            switch_state = GPIO.input(LimitSwitchPin)
-            if switch_state != prev_switch_state:
-                if switch_state == 0:
-                    limit_switch_state = LimitSwitchState.CLOSED
-                else:
-                    limit_switch_state = LimitSwitchState.OPEN
-                prev_switch_state = switch_state
+        switch_state = GPIO.input(LimitSwitchPin)
+        if switch_state != prev_switch_state:
+            if switch_state == 0:
+                limit_switch_state = LimitSwitchState.CLOSED
+            else:
+                limit_switch_state = LimitSwitchState.OPEN
+            prev_switch_state = switch_state
             state_machine(app)
-            print("-------------------------------------------------")
-            print("User input: " + user_input)
-            print("Lock state: " + str(lock_state))
-            print("Process state: " + str(process_state))
-            print("Limit switch state: " + str(limit_switch_state))
-            print("-------------------------------------------------")
+        print("-------------------------------------------------")
+        print("User input: " + user_input)
+        print("Lock state: " + str(lock_state))
+        print("Process state: " + str(process_state))
+        print("Limit switch state: " + str(limit_switch_state))
+        print("-------------------------------------------------")
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
