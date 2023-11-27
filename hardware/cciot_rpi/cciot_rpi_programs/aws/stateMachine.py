@@ -429,7 +429,6 @@ def state_machine(ctk):
     global process_state
     global keypadPressed
     global curr_process_state
-    curr_process_state = process_state
     if keypadPressed != -1:
         setAllLines(GPIO.HIGH)
         if GPIO.input(keypadPressed) == 0:
@@ -457,6 +456,7 @@ def state_machine(ctk):
             # ctk.select_frame_by_name("step_5")
             lock_box()
             # ctk.select_frame_by_name("step_1")
+        curr_process_state = process_state
 
 
 app = ctkApp()
@@ -499,6 +499,7 @@ def myMainLoop():
         print("Limit switch state: " + str(limit_switch_state))
         print("-------------------------------------------------")
     if check_change_of_state():
+        print("Changing state to: " + curr_process_state)
         app.select_frame_by_name(curr_process_state)
     app.after(100, myMainLoop)
 
