@@ -464,6 +464,7 @@ def myMainLoop():
     global process_state
     global lock_state
     global user_input
+    global app
     mqtt_connection = aws_setup()
     hardware_setup()
     device_id = getSerial()
@@ -476,7 +477,7 @@ def myMainLoop():
                 else:
                     limit_switch_state = LimitSwitchState.OPEN
                 prev_switch_state = switch_state
-            state_machine(ctk)
+            state_machine(app)
             print("-------------------------------------------------")
             print("User input: " + user_input)
             print("Lock state: " + str(lock_state))
