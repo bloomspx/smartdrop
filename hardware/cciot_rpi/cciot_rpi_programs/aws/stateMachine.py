@@ -169,11 +169,12 @@ class LockState(Enum):
 class ProcessState(Enum):
     START_DELIVERY_SEQUENCE = 0,
     WAITINGTOUNLOCKBOX = 1,
-    TAKINGORDERPICTURE = 2,
-    KEYINGINORDERS = 3,
-    CONFIRMINGMOREORDERS = 4,
-    CONFIRMLOCKSEQUENCE = 5,
-    WAITINGTOLOCKBOX = 6
+    WAITINGFORUNLOCKBOXPAYLOAD = 2
+    TAKINGORDERPICTURE = 3,
+    KEYINGINORDERS = 4,
+    CONFIRMINGMOREORDERS = 5,
+    CONFIRMLOCKSEQUENCE = 6,
+    WAITINGTOLOCKBOX = 7
 
 class LimitSwitchState(Enum):
     OPEN = "open"
@@ -302,19 +303,42 @@ def confirm_passcode():
     if len(user_input) == 6:
         validate_payload = format_validate_payload(device_id, user_input)
         publish_to_validate_topic(mqtt_connection, validate_payload)
-        received_payload = wait_for_received_payload()
-        if received_payload:
-            if validate_passcode_payload(decode_payload(received_payload)):
-            # if user_input in passcode:
-                print("Correct passcode")
-                unlock()
-                most_recent_keyed_in_passcode = user_input
-                process_state = ProcessState.TAKINGORDERPICTURE
-            else:
-                lock()
-                print("Incorrect passcode, please key in again")
-            invalidate_payload()
+        ProcessState.WAITINGFORUNLOCKBOXPAYLOAD
+        # received_payload = wait_for_received_payload()
+        # if received_payload:
+        #     if validate_passcode_payload(decode_payload(received_payload)):
+        #     # if user_input in passcode:
+        #         print("Correct passcode")
+        #         unlock()
+        #         most_recent_keyed_in_passcode = user_input
+        #         process_state = ProcessState.TAKINGORDERPICTURE
+        #     else:
+        #         lock()
+        #         print("Incorrect passcode, please key in again")
+        #     invalidate_payload()
         user_input = ""
+    return
+## WAITINGFORUNLOCKBOXPAYLOAD ##
+def checkUnlockBoxPayload():
+    global process_state
+    global mqtt_connection
+    global device_id
+    global user_input
+    global most_recent_keyed_in_passcode
+    global lock_state
+    global limit_switch_state
+    received_payload = wait_for_received_payload()
+    if received_payload:
+        if validate_passcode_payload(decode_payload(received_payload)):
+            print("Correct passcode")
+            unlock()
+            most_recent_keyed_in_passcode = user_input
+            process_state = ProcessState.TAKINGORDERPICTURE
+        else:
+            lock()
+            print("Incorrect passcode, please key in again")
+        invalidate_payload()
+    user_input = ""
     return
 
 ## TAKINGORDERPICTURES ##
@@ -448,6 +472,8 @@ def state_machine(ctk):
         elif process_state == ProcessState.WAITINGTOUNLOCKBOX and lock_state == LockState.LOCKED:
             # ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=confirm_passcode, asterisk_func=backspace)
+        elif process_state == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD:
+            checkUnlockBoxPayload()
         elif process_state == ProcessState.TAKINGORDERPICTURE:
             # ctk.select_frame_by_name("step_3")
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
