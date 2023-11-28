@@ -171,10 +171,12 @@ class ProcessState(Enum):
     WAITINGTOUNLOCKBOX = 1,
     WAITINGFORUNLOCKBOXPAYLOAD = 2
     TAKINGORDERPICTURE = 3,
-    KEYINGINORDERS = 4,
-    CONFIRMINGMOREORDERS = 5,
-    CONFIRMLOCKSEQUENCE = 6,
-    WAITINGTOLOCKBOX = 7
+    WAITINGFORPICTUREPAYLOAD = 4,
+    KEYINGINORDERS = 5,
+    WAITINGFORADDITIONALORDERSPAYLOAD = 6,
+    CONFIRMINGMOREORDERS = 7,
+    CONFIRMLOCKSEQUENCE = 8,
+    WAITINGTOLOCKBOX = 9
 
 class LimitSwitchState(Enum):
     OPEN = "open"
@@ -318,6 +320,7 @@ def confirm_passcode():
         #     invalidate_payload()
         user_input = ""
     return
+
 ## WAITINGFORUNLOCKBOXPAYLOAD ##
 def checkUnlockBoxPayload():
     global process_state
@@ -349,6 +352,22 @@ def taking_order_picture():
     # AWS PUB take photo and receive confirmation from MQTT here
     take_photo_payload = format_take_photo_payload(device_id, most_recent_keyed_in_passcode)
     publish_to_take_photo_topic(mqtt_connection, take_photo_payload)
+    process_state = ProcessState.WAITINGFORPICTUREPAYLOAD
+
+def invalidate_asterisk_at_photo_state():
+    global process_state
+    print("Please press # to take picture")
+    process_state = ProcessState.TAKINGORDERPICTURE
+
+## WAITINGFORPICTUREPAYLOAD ##
+def checkPicturePayload():
+    global process_state
+    global mqtt_connection
+    global device_id
+    global user_input
+    global most_recent_keyed_in_passcode
+    global lock_state
+    global limit_switch_state
     received_payload = wait_for_received_payload()
     if received_payload:
         if validate_take_photo_payload(decode_payload(received_payload)):
@@ -357,12 +376,9 @@ def taking_order_picture():
         else:
             print("Picture not taken")
             print("Please press # to take picture")
-    invalidate_payload()
-
-def invalidate_asterisk_at_photo_state():
-    global process_state
-    print("Please press # to take picture")
-    process_state = ProcessState.TAKINGORDERPICTURE
+        invalidate_payload()
+    user_input = ""
+    return
 
 ## CONFIRMINGMOREORDERS ##
 def confirm_more_orders():
@@ -392,6 +408,27 @@ def key_in_additional_orders():
         else:
             print("Incorrect passcode, please key in again")
     invalidate_payload()
+    user_input = ""
+    return
+
+## WAITINGFORADDITIONALORDERSPAYLOAD ##
+def checkAdditionalOrdersPayload():
+    global process_state
+    global mqtt_connection
+    global device_id
+    global user_input
+    global most_recent_keyed_in_passcode
+    global lock_state
+    global limit_switch_state
+    received_payload = wait_for_received_payload()
+    if received_payload:
+        if validate_passcode_payload(decode_payload(received_payload)):
+            print("Correct passcode")
+            most_recent_keyed_in_passcode = user_input
+            process_state = ProcessState.TAKINGORDERPICTURE
+        else:
+            print("Incorrect passcode, please key in again")
+        invalidate_payload()
     user_input = ""
     return
 
@@ -470,26 +507,21 @@ def state_machine(ctk):
             print("Press # to start delivery sequence")
             keypad_input(hash_func=start_delivery_sequence, asterisk_func=invalid_asterisk_at_start_state)
         elif process_state == ProcessState.WAITINGTOUNLOCKBOX and lock_state == LockState.LOCKED:
-            # ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=confirm_passcode, asterisk_func=backspace)
         elif process_state == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD:
             checkUnlockBoxPayload()
         elif process_state == ProcessState.TAKINGORDERPICTURE:
-            # ctk.select_frame_by_name("step_3")
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
+        elif process_state == ProcessState.WAITINGFORPICTUREPAYLOAD:
+            checkPicturePayload()
         elif process_state == ProcessState.CONFIRMINGMOREORDERS:
-            # ctk.select_frame_by_name("step_4")
             keypad_input(hash_func=confirm_more_orders, asterisk_func=confirm_no_more_orders)
         elif process_state == ProcessState.KEYINGINORDERS:
-            # ctk.select_frame_by_name("step_2")
             keypad_input(hash_func=key_in_additional_orders, asterisk_func=start_locking_sequence)
-        # elif process_state == ProcessState.CONFIRMLOCKSEQUENCE:
-        #     print("Please press # to confirm locking sequence. Press * to return to keying in orders")
-        #     keypad_input(hash_func=confirm_lock_sequence, asterisk_func=return_to_keying_in_orders)
+        elif process_state == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
+            checkAdditionalOrdersPayload()
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
-            # ctk.select_frame_by_name("step_5")
             lock_box()
-            # ctk.select_frame_by_name("step_1")
         curr_process_state = process_state
         curr_user_input = user_input
 
