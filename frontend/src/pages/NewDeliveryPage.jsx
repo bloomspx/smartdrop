@@ -1,13 +1,15 @@
-// NewDeliveryPage.jsx
 import React, { useState } from 'react';
 import FormField from '../components/FormField';
 import Button from '../components/Button';
 import { useFormSubmission } from '../api/useFormSubmission';
 import { apiClient } from '../api/apiClient';
 import { getUser } from '../service/AuthService';
+import { useNavigate } from 'react-router-dom';
+import { ReactComponent as BackIcon } from '../icons/back-icon.svg'
 
 const NewDeliveryPage = () => {
-  const {isLoading, handleSubmit} = useFormSubmission(apiClient.newOrder, '/dashboard')
+  const navigate = useNavigate();
+  const { isLoading, handleSubmit } = useFormSubmission(apiClient.newOrder, '/dashboard')
   const [formData, setFormData] = useState({
     itemName: '',
     shopName: '',
@@ -20,16 +22,22 @@ const NewDeliveryPage = () => {
 
   const submitForm = (e) => {
     e.preventDefault();
-    const data = {...formData, deviceID: getUser().deviceID};
+    const data = { ...formData, deviceID: getUser().deviceID };
     console.log(data);
     handleSubmit(data);
     // Here you would typically handle the creation of a new delivery
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#EBFEFA]"> 
-    <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-      <h1 className="text-2xl font-bold text-center my-4">Create New Delivery</h1>
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="relative max-w-md w-full bg-white rounded-lg shadow-md p-8">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="absolute top-0 left-0 m-4 p-2 text-gray-600 hover:text-gray-800"
+        >
+          <BackIcon className="w-4 h-4" />
+        </button>
+        <h1 className="text-2xl font-bold text-center my-4">Create New Delivery</h1>
         <form onSubmit={submitForm}>
           <FormField
             label="Item Name"

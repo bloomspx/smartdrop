@@ -1,42 +1,45 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/home/Home"
+import Register from "./pages/register/Register"
 import Error from "./pages/error/Error"
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard/Dashboard";
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
 import { useEffect, useState } from "react";
 import { getToken, getUser, resetUserSession, setUserSession, BACKEND_API_ADDRESS, API_KEY } from "./service/AuthService";
-import LoginPage from "./pages/LoginPage";
-import RegistrationPage from "./pages/RegistrationPage";
-import NewDeliveryPage from "./pages/NewDeliveryPage";
-import { ToastContainer } from "react-toastify";
-import { useApi } from "./api/useApi";
-import { apiClient } from "./api/apiClient";
+import axios from "axios";
+import Delivery from "./pages/delivery/Delivery";
+
+const verifyTokenUrl = BACKEND_API_ADDRESS + 'verify';
 
 function App() {
 
-  const { isLoading: isAuthenticating, request } = useApi(apiClient.verify);
+  const [isAuthenticating, setAuthenticating] = useState(true)
+
+  // checks for validity of token
   useEffect(() => {
     const token = getToken();
     if (token === 'undefined' || token === undefined || token === null || !token) {
       return;
     }
 
-    request({user:getUser(), token})
-    .catch( (e) => {
-      console.log('Verification Failed' + e);
+    const requestConfig = {
+      headers: {
+          'x-api-key': API_KEY
+      }
+    }
+    const requestBody = {
+      user: getUser(),
+      token: token
+    }
+    axios.post(verifyTokenUrl, requestBody, requestConfig).then(response => {
+      setUserSession(response.data.user, response.data.token);
+      setAuthenticating(false);
+    }).catch( () => {
       resetUserSession();
+      setAuthenticating(false);
     })
   }, []);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     console.log('Verify Success');
-  //   } else {
-  //     console.log('Verification Failed' + error);
-  //     // resetUserSession();
-  //   }
-  //   console.log(data)
-  // }, [isAuthenticating, data])
 
   const token = getToken();
   if (isAuthenticating && token) {
@@ -51,7 +54,7 @@ function App() {
             path="/"
             element={
               <PublicRoute>
-                <LoginPage/>
+                <Home/>
               </PublicRoute>
             }
           />
@@ -59,7 +62,7 @@ function App() {
             path="/register"
             element={
               <PublicRoute>
-                <RegistrationPage />
+                <Register />
               </PublicRoute>
             }/>
           <Route
@@ -71,17 +74,16 @@ function App() {
             }
           />
           <Route
-            path="/new-delivery"
+            path="/newdelivery"
             element={
               <PrivateRoute>
-                <NewDeliveryPage/>
+                <Delivery/>
               </PrivateRoute>
             }
           />
           <Route path='*' element = {<Error/>}/>
         </Routes>
       </BrowserRouter>
-    <ToastContainer/>
     </div>
   );
 }

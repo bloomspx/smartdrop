@@ -114,15 +114,11 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
       break;
     case HTTP_EVENT_ON_HEADER:
       Serial.println();
-      Serial.printf("HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+      Serial.printf("HTTP_EVENT_ON_HEADER");
       break;
     case HTTP_EVENT_ON_DATA:
       Serial.println();
-      Serial.printf("HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-      if (!esp_http_client_is_chunked_response(evt->client)) {
-        // Write out data
-        // printf("%.*s", evt->data_len, (char*)evt->data);
-      }
+      Serial.printf("HTTP_EVENT_ON_DATA");
       break;
     case HTTP_EVENT_ON_FINISH:
       Serial.println("");
@@ -170,9 +166,11 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
 
   esp_http_client_handle_t http_client;
   esp_http_client_config_t config_client = {0};
-
+  
   String deviceIDString = deviceID;
   String passcodeString = passcode;
+  publishToAWS(deviceID, passcode);
+
   Serial.println(deviceIDString);
   Serial.println(passcodeString);
   String putUrl2 = "https://zoo7ealxvd.execute-api.ap-southeast-1.amazonaws.com/dev/cciot-smart-delivery/" + deviceIDString + "_" + passcodeString + ".jpg";
@@ -196,7 +194,6 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
     Serial.print("esp_http_client_get_status_code: ");
     Serial.println(esp_http_client_get_status_code(http_client));
   }
-
   esp_http_client_cleanup(http_client);
   esp_camera_fb_return(fb);
 }
@@ -230,12 +227,11 @@ void connectAWS()
   Serial.println("AWS IoT Connected!");
 }
  
-void publishToAWS(const char* deviceID, const char* passcode, String imageURL)
+void publishToAWS(const char* deviceID, const char* passcode)
 {
   StaticJsonDocument<200> doc;
   doc["deviceID"] = deviceID;
   doc["passcode"] = passcode;
-  doc["imageURL"] = imageURL;
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer); // print to client
   client.publish(ESP32_PUBLISH_PHOTO_TOPIC, jsonBuffer);

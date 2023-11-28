@@ -7,61 +7,8 @@ import { getDeviceID, resetUserSession } from '../service/AuthService';
 
 import { formatDistance, parse } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as RefreshIcon } from '../icons/refresh.svg';
 
-const mockData = [
-  {
-      "orderDate": {
-          "S": "11/21/2023, 4:27:25 PM"
-      },
-      "deliveredDate": {
-          "S": ""
-      },
-      "imageURL": {
-          "S": "https://wonderfulengineering.com/wp-content/uploads/2014/10/image-wallpaper-15.jpg"
-      },
-      "deviceID": {
-          "S": "test"
-      },
-      "isDelivered": {
-          "BOOL": true
-      },
-      "passcode": {
-          "S": "228477"
-      },
-      "itemName": {
-          "S": "aaa"
-      },
-      "shopName": {
-          "S": "aaa"
-      }
-  },
-  {
-      "orderDate": {
-          "S": "11/21/2023, 4:16:37 PM"
-      },
-      "deliveredDate": {
-          "S": ""
-      },
-      "imageURL": {
-          "S": ""
-      },
-      "deviceID": {
-          "S": "test"
-      },
-      "isDelivered": {
-          "BOOL": false
-      },
-      "passcode": {
-          "S": "834119"
-      },
-      "itemName": {
-          "S": "shopeee"
-      },
-      "shopName": {
-          "S": "shopeee"
-      }
-  }
-]
 
 const calculateDays = (orderDate, deliveredDate) => {
   const formatString = 'MM/dd/yyyy, hh:mm:ss a';
@@ -79,9 +26,9 @@ const calculateDays = (orderDate, deliveredDate) => {
 
 
 const apiItemAdapte = (item) => {
-  return  {
+  return {
     productName: item.itemName.S,
-    dateOrdered: item.orderDate.S,
+    dateOrdered: item.orderDate.S.split(',')[0],
     dateDelivered: item.deliveredDate.S,
     imageSrc: item.imageURL.S,
     deviceID: item.deviceID.S,
@@ -93,7 +40,7 @@ const apiItemAdapte = (item) => {
 }
 
 const ParcelManagementPage = () => {
-  const {data, request} = useApi(apiClient.getAllOrders);
+  const { data, request } = useApi(apiClient.getAllOrders);
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -111,11 +58,17 @@ const ParcelManagementPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#EBFEFA]"> {/* Adjust the background color */}
+    <div className="min-h-screen">
       <h1 className="text-2xl font-bold text-center my-4">Parcel Management</h1>
       {data && <ParcelList parcels={data.map(it => apiItemAdapte(it))} />}
       <button onClick={handleLogout} className="text-white bg-gray-400 hover:bg-gray-600 rounded absolute bottom-0 left-0 m-4 p-4">
         Logout
+      </button>
+      <button
+        onClick={() => {request(getDeviceID());}}
+        className="absolute bottom-0 right-0 m-4 p-2 text-gray-600 hover:text-gray-800 bg-purple-200 rounded-xl"
+      >
+        <RefreshIcon className="w-12 h-12"/>
       </button>
     </div>
   );

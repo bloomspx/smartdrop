@@ -1,4 +1,3 @@
-// LoginPage.jsx
 import React, { useState, useEffect } from 'react';
 import FormField from '../components/FormField';
 import Button from '../components/Button';
@@ -31,7 +30,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#EBFEFA]"> {/* Change bg-gray-200 to your desired background color */}
+    <div className="flex justify-center items-center min-h-screen">
     <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
       <h1 className="text-2xl font-bold text-center my-4">Login</h1>
         <form onSubmit={submitForm}>

@@ -9,11 +9,11 @@ const ParcelList = ({ parcels }) => {
   const navigate = useNavigate();
 
   const handleCreateNew = () => {
-    navigate('/new-delivery'); // Use the actual route for creating a new delivery
+    navigate('/new-delivery'); 
   };
 
   return (
-    <div className="container mx-auto p-4"> {/* This should match the background of your design */}
+    <div className="container mx-auto p-4"> 
       <div className="flex justify-end mb-6">
         <Button className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" onClick={handleCreateNew}>
           Create New Delivery
