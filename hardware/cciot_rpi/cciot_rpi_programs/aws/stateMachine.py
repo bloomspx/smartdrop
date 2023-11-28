@@ -22,9 +22,9 @@ class ctkApp(customtkinter.CTk):
         self.geometry("%dx%d" % (width, height))
 
         # Load images
-        # image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
-        # self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "delivery-man.png")), size=(50, 50))
-        # self.package_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "package.png")), size=(75, 75))
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
+        self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "delivery-man.png")), size=(50, 50))
+        self.package_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "package.png")), size=(75, 75))
 
         # Set main grid layout 1x2
         # 1st column is for navigation frame
