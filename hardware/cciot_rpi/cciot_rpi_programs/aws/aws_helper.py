@@ -68,7 +68,7 @@ def validate_passcode_payload(payload):
 
 # Helper function to validate the take photo payload
 def validate_take_photo_payload(payload):
-    return payload["imageURL"] != None
+    return payload["published"]
 
 def aws_setup():
     # Create a MQTT connection 
