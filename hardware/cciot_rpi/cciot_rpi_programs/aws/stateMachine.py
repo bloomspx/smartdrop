@@ -350,6 +350,7 @@ def checkUnlockBoxPayload():
             curr_passcode_valid = False
             lock()
             print("Incorrect passcode, please key in again")
+            process_state = ProcessState.WAITINGTOUNLOCKBOX
         invalidate_payload()
     user_input = ""
     return
@@ -436,6 +437,7 @@ def checkAdditionalOrdersPayload():
         else:
             curr_passcode_valid = False
             print("Incorrect passcode, please key in again")
+            process_state = ProcessState.KEYINGINORDERS
         invalidate_payload()
     user_input = ""
     return
