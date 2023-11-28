@@ -584,6 +584,7 @@ def myMainLoop():
         state_machine(app)
         print("-------------------------------------------------")
         print("User input: " + user_input)
+        print("Most recent user input: " + str(most_recent_keyed_in_passcode))
         print("Lock state: " + str(lock_state))
         print("Process state: " + str(process_state))
         print("Limit switch state: " + str(limit_switch_state))
