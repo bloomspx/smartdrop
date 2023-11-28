@@ -154,8 +154,6 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
   digitalWrite(FLASH_GPIO_NUM, LOW);
   delay(500);
 
-  publishToAWS(deviceID, passcode);
-
   Serial.println("Uploading Photo");
   int image_buf_size = 4000 * 1000;                                                  
   uint8_t *image = (uint8_t *)ps_calloc(image_buf_size, sizeof(char));
@@ -168,9 +166,11 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
 
   esp_http_client_handle_t http_client;
   esp_http_client_config_t config_client = {0};
-
+  
   String deviceIDString = deviceID;
   String passcodeString = passcode;
+  publishToAWS(deviceID, passcode);
+
   Serial.println(deviceIDString);
   Serial.println(passcodeString);
   String putUrl2 = "https://zoo7ealxvd.execute-api.ap-southeast-1.amazonaws.com/dev/cciot-smart-delivery/" + deviceIDString + "_" + passcodeString + ".jpg";
@@ -181,6 +181,7 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
 
   config_client.url = putUrl3;
   config_client.cert_pem = AWS_CERT_CA;
+  // config_client.cert_len = AWS_CERT_CA 
   config_client.event_handler = _http_event_handler;
   config_client.method = HTTP_METHOD_PUT;
   
@@ -195,7 +196,6 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
   }
   esp_http_client_cleanup(http_client);
   esp_camera_fb_return(fb);
-  fb = NULL;
 }
 
   
