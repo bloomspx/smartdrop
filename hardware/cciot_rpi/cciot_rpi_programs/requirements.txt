@@ -1,3 +1,4 @@
 awscrt
 awsiotsdk
 customtkinter
+pillow
