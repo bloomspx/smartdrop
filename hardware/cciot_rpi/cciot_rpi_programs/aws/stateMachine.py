@@ -412,7 +412,6 @@ def key_in_additional_orders():
         validate_payload = format_validate_payload(device_id, user_input)
         publish_to_validate_topic(mqtt_connection, validate_payload)
         process_state = ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD
-        user_input = ""
     else:
         curr_passcode_valid = False
     return
