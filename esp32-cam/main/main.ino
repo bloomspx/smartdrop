@@ -114,15 +114,11 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
       break;
     case HTTP_EVENT_ON_HEADER:
       Serial.println();
-      Serial.printf("HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+      Serial.printf("HTTP_EVENT_ON_HEADER");
       break;
     case HTTP_EVENT_ON_DATA:
       Serial.println();
-      Serial.printf("HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-      if (!esp_http_client_is_chunked_response(evt->client)) {
-        // Write out data
-        // printf("%.*s", evt->data_len, (char*)evt->data);
-      }
+      Serial.printf("HTTP_EVENT_ON_DATA");
       break;
     case HTTP_EVENT_ON_FINISH:
       Serial.println("");
@@ -158,6 +154,8 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
   digitalWrite(FLASH_GPIO_NUM, LOW);
   delay(500);
 
+  publishToAWS(deviceID, passcode);
+
   Serial.println("Uploading Photo");
   int image_buf_size = 4000 * 1000;                                                  
   uint8_t *image = (uint8_t *)ps_calloc(image_buf_size, sizeof(char));
@@ -183,7 +181,6 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
 
   config_client.url = putUrl3;
   config_client.cert_pem = AWS_CERT_CA;
-  // config_client.cert_len = AWS_CERT_CA 
   config_client.event_handler = _http_event_handler;
   config_client.method = HTTP_METHOD_PUT;
   
@@ -196,9 +193,9 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
     Serial.print("esp_http_client_get_status_code: ");
     Serial.println(esp_http_client_get_status_code(http_client));
   }
-
   esp_http_client_cleanup(http_client);
   esp_camera_fb_return(fb);
+  fb = NULL;
 }
 
   
@@ -230,12 +227,11 @@ void connectAWS()
   Serial.println("AWS IoT Connected!");
 }
  
-void publishToAWS(const char* deviceID, const char* passcode, String imageURL)
+void publishToAWS(const char* deviceID, const char* passcode)
 {
   StaticJsonDocument<200> doc;
   doc["deviceID"] = deviceID;
   doc["passcode"] = passcode;
-  doc["imageURL"] = imageURL;
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer); // print to client
   client.publish(ESP32_PUBLISH_PHOTO_TOPIC, jsonBuffer);
