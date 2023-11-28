@@ -116,6 +116,20 @@ class ctkApp(customtkinter.CTk):
                                     font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
         self.close_box_frame_content1_label.place(relx=0.5, rely=0.5, anchor="center")  
         self.close_box_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
+        # create wait for validation frame
+        self.wait_for_validation_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
+        self.wait_for_validation_frame_content1_label = customtkinter.CTkLabel(self.wait_for_validation_frame, text="Validating passcode...",
+                                    text_color=("gray10", "CadetBlue1"),
+                                    font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)  
+        self.wait_for_validation_frame_content1_label.place(relx=0.5, rely=0.5, anchor="center")
+        self.wait_for_validation_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
+        # create wait for validation frame
+        self.please_wait_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
+        self.please_wait_frame_content1_label = customtkinter.CTkLabel(self.please_wait_frame, text="Please wait...",
+                                    text_color=("gray10", "CadetBlue1"),
+                                    font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)  
+        self.please_wait_frame_content1_label.place(relx=0.5, rely=0.5, anchor="center")
+        self.please_wait_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
 
         # select default frame
         self.select_frame_by_name(ProcessState.START_DELIVERY_SEQUENCE)
@@ -147,11 +161,25 @@ class ctkApp(customtkinter.CTk):
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
             self.forget_all_frames()
-            self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
+            self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode" if curr_passcode_valid else "Invalid Passcode. Please try again.",
+                            text_color=("gray10", "CadetBlue1"),
+                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+            self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
+            self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Press '#' to confirm passcode or '*' to delete character",
+                            text_color=("gray10", "CadetBlue1"),
+                            font=customtkinter.CTkFont(size=15), padx = 20)
+            self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.5, anchor="center")  
+            self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
                     text_color=("gray10", "CadetBlue1"),
                     font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-            self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.6, anchor="center")
+            self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
+        if name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
+            self.forget_all_frames()
+            self.wait_for_validation_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
+        if name == ProcessState.WAITINGFORPICTUREPAYLOAD:
+            self.forget_all_frames()
+            self.please_wait_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.TAKINGORDERPICTURE:
             self.forget_all_frames()
             self.photo_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
@@ -203,7 +231,6 @@ LimitSwitchPin = 23
 user_input = ""
 lock_state = LockState.LOCKED
 process_state = ProcessState.START_DELIVERY_SEQUENCE
-passcodes = ["4789", "1234", "2345"]
 limit_switch_state = LimitSwitchState.CLOSED
 keypadPressed = -1
 switch_state = 1
@@ -215,6 +242,8 @@ prev_process_state = ProcessState.START_DELIVERY_SEQUENCE
 curr_process_state = ProcessState.START_DELIVERY_SEQUENCE
 prev_user_input = user_input
 curr_user_input = user_input
+prev_passcode_valid = True
+curr_passcode_valid = True
 
 ########################################## HELPER FUNCTIONS ##########################################
 # Unlock command
@@ -262,20 +291,6 @@ def readLine(line, characters):
         user_input = user_input + characters[2]
     GPIO.output(line, GPIO.LOW)
 
-# Get hardware provisioned RPI ID
-def getSerial():
-  # Extract serial from cpuinfo file
-  cpuserial = "0000000000000000"
-  try:
-    f = open('/proc/cpuinfo','r')
-    for line in f:
-      if line[0:6]=='Serial':
-        cpuserial = line[10:26]
-    f.close()
-  except:
-    cpuserial = "ERROR000000000"
-  return cpuserial
-
 ########################################## STATE SPECIFIC FUNCTIONS ##########################################\
 ## START DELIVERY SEQUENCE ##
 def start_delivery_sequence():
@@ -302,23 +317,14 @@ def confirm_passcode():
     global process_state
     global most_recent_keyed_in_passcode
     global mqtt_connection
+    global curr_passcode_valid
     if len(user_input) == 6:
         validate_payload = format_validate_payload(device_id, user_input)
         publish_to_validate_topic(mqtt_connection, validate_payload)
         process_state = ProcessState.WAITINGFORUNLOCKBOXPAYLOAD
-        # received_payload = wait_for_received_payload()
-        # if received_payload:
-        #     if validate_passcode_payload(decode_payload(received_payload)):
-        #     # if user_input in passcode:
-        #         print("Correct passcode")
-        #         unlock()
-        #         most_recent_keyed_in_passcode = user_input
-        #         process_state = ProcessState.TAKINGORDERPICTURE
-        #     else:
-        #         lock()
-        #         print("Incorrect passcode, please key in again")
-        #     invalidate_payload()
         user_input = ""
+    else:
+        curr_passcode_valid = False
     return
 
 ## WAITINGFORUNLOCKBOXPAYLOAD ##
@@ -330,14 +336,17 @@ def checkUnlockBoxPayload():
     global most_recent_keyed_in_passcode
     global lock_state
     global limit_switch_state
+    global curr_passcode_valid
     received_payload = wait_for_received_payload()
     if received_payload:
         if validate_passcode_payload(decode_payload(received_payload)):
+            curr_passcode_valid = True
             print("Correct passcode")
             unlock()
             most_recent_keyed_in_passcode = user_input
             process_state = ProcessState.TAKINGORDERPICTURE
         else:
+            curr_passcode_valid = False
             lock()
             print("Incorrect passcode, please key in again")
         invalidate_payload()
@@ -396,20 +405,15 @@ def key_in_additional_orders():
     global process_state
     global most_recent_keyed_in_passcode
     global mqtt_connection
+    global curr_passcode_valid
     # AWS PUB passcode and receive confirmation from MQTT here
-    validate_payload = format_validate_payload(device_id, user_input)
-    publish_to_validate_topic(mqtt_connection, validate_payload)
-    process_state = ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD
-    # received_payload = wait_for_received_payload()
-    # if received_payload:
-    #     if validate_passcode_payload(decode_payload(received_payload)):
-    #         print("Correct passcode")
-    #         most_recent_keyed_in_passcode = user_input
-    #         process_state = ProcessState.TAKINGORDERPICTURE
-    #     else:
-    #         print("Incorrect passcode, please key in again")
-    # invalidate_payload()
-    user_input = ""
+    if len(user_input) == 6:
+        validate_payload = format_validate_payload(device_id, user_input)
+        publish_to_validate_topic(mqtt_connection, validate_payload)
+        process_state = ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD
+        user_input = ""
+    else:
+        curr_passcode_valid = False
     return
 
 ## WAITINGFORADDITIONALORDERSPAYLOAD ##
@@ -421,13 +425,16 @@ def checkAdditionalOrdersPayload():
     global most_recent_keyed_in_passcode
     global lock_state
     global limit_switch_state
+    global curr_passcode_valid
     received_payload = wait_for_received_payload()
     if received_payload:
         if validate_passcode_payload(decode_payload(received_payload)):
+            curr_passcode_valid = True
             print("Correct passcode")
             most_recent_keyed_in_passcode = user_input
             process_state = ProcessState.TAKINGORDERPICTURE
         else:
+            curr_passcode_valid = False
             print("Incorrect passcode, please key in again")
         invalidate_payload()
     user_input = ""
@@ -469,7 +476,6 @@ def invalid_asterisk_at_locking_state():
 
 ########################################## GENERAL KEYPAD FUNCTIONS ##########################################
 def checkSpecialKeys(hash_func, asterisk_func):
-    global passcodes
     global process_state
     global user_input
     pressed = False
@@ -525,11 +531,7 @@ def state_machine(ctk):
             lock_box()
         curr_process_state = process_state
         curr_user_input = user_input
-
-
-app = ctkApp()
-mqtt_connection = aws_setup()
-hardware_setup()
+        
 
 def check_change_of_state():
     global prev_process_state
@@ -547,6 +549,18 @@ def check_change_of_input():
         return True
     return False
     
+def check_change_of_passcode_valid():
+    global prev_passcode_valid
+    global curr_passcode_valid
+    if prev_passcode_valid != curr_passcode_valid:
+        prev_passcode_valid = curr_passcode_valid
+        return True
+    return False
+
+app = ctkApp()
+mqtt_connection = aws_setup()
+hardware_setup()
+
 def myMainLoop():
     global switch_state
     global prev_switch_state
@@ -557,7 +571,6 @@ def myMainLoop():
     global user_input
     global limit_switch_state
     global app
-    # device_id = getSerial()
     if mqtt_connection and device_id:
         switch_state = GPIO.input(LimitSwitchPin)
         if switch_state != prev_switch_state:
@@ -585,6 +598,8 @@ def myMainLoop():
             if check_change_of_input():
                 print("Changing input to: " + str(curr_user_input))
                 app.select_frame_by_name(curr_process_state, curr_user_input)
+            if check_change_of_passcode_valid():
+                app.select_frame_by_name(curr_process_state)
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
