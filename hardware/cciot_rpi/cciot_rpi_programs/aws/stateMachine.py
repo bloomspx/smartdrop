@@ -16,8 +16,8 @@ class ctkApp(customtkinter.CTk):
         self.title("Smart Delivery System")
 
         # Get screen width and height
-        width= self.winfo_screenwidth() 
-        height= self.winfo_screenheight()
+        width= 1000
+        height= 500
         # Set tkinter window size to full screen
         self.geometry("%dx%d" % (width, height))
 
