@@ -171,10 +171,10 @@ class ctkApp(customtkinter.CTk):
                             text_color=("gray10", "CadetBlue1"),
                             font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
             self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
-            text_color=("gray10", "CadetBlue1"),
-            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-            self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
+                            text_color=("gray10", "CadetBlue1"),
+                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
             self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
+            self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
             self.forget_all_frames()
@@ -601,7 +601,7 @@ def myMainLoop():
                 print("Changing input to: " + str(curr_user_input))
                 app.select_frame_by_name(curr_process_state, curr_user_input)
             if check_change_of_passcode_valid():
-                app.select_frame_by_name(curr_process_state)
+                app.select_frame_by_name(curr_process_state, curr_user_input)
     app.after(100, myMainLoop)
 
 app.after(100, myMainLoop)
