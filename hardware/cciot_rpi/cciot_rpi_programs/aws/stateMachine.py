@@ -305,7 +305,7 @@ def confirm_passcode():
     if len(user_input) == 6:
         validate_payload = format_validate_payload(device_id, user_input)
         publish_to_validate_topic(mqtt_connection, validate_payload)
-        ProcessState.WAITINGFORUNLOCKBOXPAYLOAD
+        process_state = ProcessState.WAITINGFORUNLOCKBOXPAYLOAD
         # received_payload = wait_for_received_payload()
         # if received_payload:
         #     if validate_passcode_payload(decode_payload(received_payload)):
@@ -399,15 +399,16 @@ def key_in_additional_orders():
     # AWS PUB passcode and receive confirmation from MQTT here
     validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
-    received_payload = wait_for_received_payload()
-    if received_payload:
-        if validate_passcode_payload(decode_payload(received_payload)):
-            print("Correct passcode")
-            most_recent_keyed_in_passcode = user_input
-            process_state = ProcessState.TAKINGORDERPICTURE
-        else:
-            print("Incorrect passcode, please key in again")
-    invalidate_payload()
+    process_state = ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD
+    # received_payload = wait_for_received_payload()
+    # if received_payload:
+    #     if validate_passcode_payload(decode_payload(received_payload)):
+    #         print("Correct passcode")
+    #         most_recent_keyed_in_passcode = user_input
+    #         process_state = ProcessState.TAKINGORDERPICTURE
+    #     else:
+    #         print("Incorrect passcode, please key in again")
+    # invalidate_payload()
     user_input = ""
     return
 

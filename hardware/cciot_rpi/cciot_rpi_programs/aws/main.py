@@ -162,15 +162,15 @@ def taking_order_picture():
     # AWS PUB take photo and receive confirmation from MQTT here
     take_photo_payload = format_take_photo_payload(device_id, most_recent_keyed_in_passcode)
     publish_to_take_photo_topic(mqtt_connection, take_photo_payload)
-    received_payload = wait_for_received_payload()
-    if received_payload:
-        if validate_take_photo_payload(decode_payload(received_payload)):
-            print("Picture taken")
-            process_state = ProcessState.CONFIRMINGMOREORDERS
-        else:
-            print("Picture not taken")
-            print("Please press # to take picture")
-    invalidate_payload()
+    # received_payload = wait_for_received_payload()
+    # if received_payload:
+    #     if validate_take_photo_payload(decode_payload(received_payload)):
+    #         print("Picture taken")
+    #         process_state = ProcessState.CONFIRMINGMOREORDERS
+    #     else:
+    #         print("Picture not taken")
+    #         print("Please press # to take picture")
+    # invalidate_payload()
 
 def invalidate_asterisk_at_photo_state():
     global process_state
@@ -196,15 +196,15 @@ def key_in_additional_orders():
     # AWS PUB passcode and receive confirmation from MQTT here
     validate_payload = format_validate_payload(device_id, user_input)
     publish_to_validate_topic(mqtt_connection, validate_payload)
-    received_payload = wait_for_received_payload()
-    if received_payload:
-        if validate_passcode_payload(decode_payload(received_payload)):
-            print("Correct passcode")
-            most_recent_keyed_in_passcode = user_input
-            process_state = ProcessState.TAKINGORDERPICTURE
-        else:
-            print("Incorrect passcode, please key in again")
-    invalidate_payload()
+    # received_payload = wait_for_received_payload()
+    # if received_payload:
+    #     if validate_passcode_payload(decode_payload(received_payload)):
+    #         print("Correct passcode")
+    #         most_recent_keyed_in_passcode = user_input
+    #         process_state = ProcessState.TAKINGORDERPICTURE
+    #     else:
+    #         print("Incorrect passcode, please key in again")
+    # invalidate_payload()
     user_input = ""
     return
 
