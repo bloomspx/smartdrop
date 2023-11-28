@@ -86,6 +86,14 @@ class ctkApp(customtkinter.CTk):
                                     text_color=("gray10", "CadetBlue1"),
                                     font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
         self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
+        self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Press '#' to confirm passcode or '*' to delete character",
+                        text_color=("gray10", "CadetBlue1"),
+                        font=customtkinter.CTkFont(size=15), padx = 20)
+        self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.5, anchor="center")  
+        self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
+                text_color=("gray10", "CadetBlue1"),
+                font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+        self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
         self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)         
         # create photo frame
         self.photo_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
@@ -140,6 +148,8 @@ class ctkApp(customtkinter.CTk):
         self.photo_frame.grid_forget()
         self.check_more_delivery_frame.grid_forget()
         self.close_box_frame.grid_forget()
+        self.wait_for_validation_frame.grid_forget()
+        self.please_wait_frame.grid_forget()
 
     def select_frame_by_name(self, name, user_input=""):
         print("select_frame_by_name:" + str(name))
@@ -161,18 +171,15 @@ class ctkApp(customtkinter.CTk):
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
             self.forget_all_frames()
-            self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode" if curr_passcode_valid else "Invalid Passcode. Please try again.",
-                            text_color=("gray10", "CadetBlue1"),
-                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+            if curr_passcode_valid:
+                self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode",
+                                text_color=("gray10", "CadetBlue1"),
+                                font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+            else:
+                self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Passcode Invalid. Please try again.",
+                                text_color=("gray10", "CadetBlue1"),
+                                font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
             self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
-            self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Press '#' to confirm passcode or '*' to delete character",
-                            text_color=("gray10", "CadetBlue1"),
-                            font=customtkinter.CTkFont(size=15), padx = 20)
-            self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.5, anchor="center")  
-            self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
-                    text_color=("gray10", "CadetBlue1"),
-                    font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-            self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
             self.forget_all_frames()
