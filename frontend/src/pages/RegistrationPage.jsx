@@ -27,7 +27,7 @@ const RegistrationPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen"> 
     <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
-      <h1 className="text-2xl font-bold text-center my-4">IOT Smart Delivery Box Registration</h1>
+      <h1 className="text-2xl font-bold text-center my-4">SmartDrop Registration</h1>
         <form onSubmit={submitForm}>
           <FormField
             label="Device ID"

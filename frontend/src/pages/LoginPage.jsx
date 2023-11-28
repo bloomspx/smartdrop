@@ -52,10 +52,10 @@ const LoginPage = () => {
             onChange={handleChange}
             required
           />
-          <Button type="submit" className="w-full mt-6">
+          <Button type="submit" className="text-white w-full mt-6">
             {isLoading ? 'Loading...' : 'Login'}
           </Button>
-          <p className="mt-4 text-center text-white">
+          <p className="mt-4 text-center text-black">
             Don't have an account yet?
             <Link to="/register" className="text-purple-600 hover:text-purple-700 font-semibold"> Sign up here!</Link>
           </p>
