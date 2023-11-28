@@ -83,13 +83,17 @@ class ctkApp(customtkinter.CTk):
         # create enter passcode frame
         self.enter_passcode_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
         self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode",
-                                    text_color=("gray10", "CadetBlue1"),
-                                    font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+                        text_color=("gray10", "CadetBlue1"),
+                        font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
         self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
         self.enter_passcode_frame_content2_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Press '#' to confirm passcode or '*' to delete character",
                         text_color=("gray10", "CadetBlue1"),
                         font=customtkinter.CTkFont(size=15), padx = 20)
         self.enter_passcode_frame_content2_label.place(relx=0.5, rely=0.5, anchor="center")  
+        self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
+                        text_color=("gray10", "CadetBlue1"),
+                        font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
+        self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
         self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)         
         # create photo frame
         self.photo_frame = customtkinter.CTkFrame(self, corner_radius=12, fg_color=("turquoise4", "turquoise4"))
@@ -167,14 +171,8 @@ class ctkApp(customtkinter.CTk):
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
             self.forget_all_frames()
-            self.enter_passcode_frame_content1_label = customtkinter.CTkLabel(self.enter_passcode_frame, text="Enter Passcode" if curr_passcode_valid else "Passcode Invalid. Please try again.",
-                            text_color=("gray10", "CadetBlue1"),
-                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-            self.enter_passcode_frame_content3_label = customtkinter.CTkLabel(self.enter_passcode_frame, text=user_input,
-                            text_color=("gray10", "CadetBlue1"),
-                            font=customtkinter.CTkFont(size=25, weight="bold"), padx = 20)
-            self.enter_passcode_frame_content1_label.place(relx=0.5, rely=0.3, anchor="center")  
-            self.enter_passcode_frame_content3_label.place(relx=0.5, rely=0.7, anchor="center")
+            self.enter_passcode_frame_content1_label.configure(text="Enter Passcode" if curr_passcode_valid else "Passcode Invalid. Please try again.")
+            self.enter_passcode_frame_content3_label.configure(text=user_input)
             self.enter_passcode_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
             self.forget_all_frames()
