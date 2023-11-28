@@ -4,6 +4,7 @@ const BASE_URL = 'https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/be
 
 async function callApi(endpoint, method, data) {
   const url = `${BASE_URL}/${endpoint}`;
+  console.log('data', data);
   const options = {
     method,
     headers: {
