@@ -1,16 +1,16 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Error from "./pages/error/Error"
-import Dashboard from "./pages/Dashboard";
-import PublicRoute from "./routes/PublicRoute";
-import PrivateRoute from "./routes/PrivateRoute";
-import { useEffect, useState } from "react";
-import { getToken, getUser, resetUserSession, setUserSession, BACKEND_API_ADDRESS, API_KEY } from "./service/AuthService";
-import LoginPage from "./pages/LoginPage";
-import RegistrationPage from "./pages/RegistrationPage";
-import NewDeliveryPage from "./pages/NewDeliveryPage";
+import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { useApi } from "./api/useApi";
 import { apiClient } from "./api/apiClient";
+import { useApi } from "./api/useApi";
+import Dashboard from "./pages/Dashboard";
+import Error from "./pages/Error";
+import LoginPage from "./pages/LoginPage";
+import NewDeliveryPage from "./pages/NewDeliveryPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import PrivateRoute from "./routes/PrivateRoute";
+import PublicRoute from "./routes/PublicRoute";
+import { getToken, getUser, resetUserSession } from "./service/AuthService";
 
 function App() {
 
@@ -21,25 +21,14 @@ function App() {
       return;
     }
 
-    request({user:getUser(), token})
-    .catch( (e) => {
-      console.log('Verification Failed' + e);
-      resetUserSession();
-    })
+    request({ user: getUser(), token })
+      .catch((e) => {
+        console.log('Verification Failed: ' + e);
+        resetUserSession();
+      })
   }, []);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     console.log('Verify Success');
-  //   } else {
-  //     console.log('Verification Failed' + error);
-  //     // resetUserSession();
-  //   }
-  //   console.log(data)
-  // }, [isAuthenticating, data])
-
-  const token = getToken();
-  if (isAuthenticating && token) {
+  if (isAuthenticating) {
     return <div className="content">Authenticating...</div>
   }
 
@@ -51,7 +40,7 @@ function App() {
             path="/"
             element={
               <PublicRoute>
-                <LoginPage/>
+                <LoginPage />
               </PublicRoute>
             }
           />
@@ -61,12 +50,12 @@ function App() {
               <PublicRoute>
                 <RegistrationPage />
               </PublicRoute>
-            }/>
+            } />
           <Route
             path="/dashboard"
             element={
               <PrivateRoute>
-                <Dashboard/>
+                <Dashboard />
               </PrivateRoute>
             }
           />
@@ -74,14 +63,14 @@ function App() {
             path="/new-delivery"
             element={
               <PrivateRoute>
-                <NewDeliveryPage/>
+                <NewDeliveryPage />
               </PrivateRoute>
             }
           />
-          <Route path='*' element = {<Error/>}/>
+          <Route path='*' element={<Error />} />
         </Routes>
       </BrowserRouter>
-    <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 }
