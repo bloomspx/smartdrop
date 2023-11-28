@@ -6,8 +6,12 @@ const ParcelItem = ({ item }) => {
   const statusIcon = item.isDelivered ? '✅' : '🕗';
   const statusText = item.isDelivered ? 'Delivered' : 'Expected Delivery In Progress';
 
+  const deliveryMsg = `Hello, you will be delivering to a SmartDrop!
+Kindly follow the instructions on the SmartDrop and enter the passcode ${item.passcode} when prompted.
+Thank you!`
+
   return (
-    <div className={`flex justify-between items-center mb-4 p-4 border-l-4 ${borderColorClass} bg-white rounded-lg shadow`}>
+    <div className={`flex justify-between items-center p-4 border-l-4 ${borderColorClass} bg-white rounded-lg shadow`}>
       {/* Left column: Item name, date, number of days, status */}
       <div className="relative flex flex-col justify-between flex-grow">
         <h3 className="font-bold top left truncate">{item.productName}</h3>
@@ -32,9 +36,9 @@ const ParcelItem = ({ item }) => {
       {/* <div className="flex items-stretch justify-end flex-grow"> */}
       <div className="flex flex-col justify-between flex-grow">
         {item.isDelivered ? (
-          <img src={item.imageSrc} alt={`Delivery ${item.productName}`} className="w-2 h-28 object-cover rounded" />
+          <img src={item.imageSrc} alt={`Delivery ${item.productName}`} className="w-28 h-28 object-cover rounded" />
         ) : (
-        <CopyButton textToCopy={item.passcode}/>
+        <CopyButton textToCopy={deliveryMsg}/>
         )}
       </div>
     </div>

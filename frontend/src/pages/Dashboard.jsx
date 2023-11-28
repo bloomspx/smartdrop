@@ -8,9 +8,11 @@ import { getDeviceID, resetUserSession } from '../service/AuthService';
 import { formatDistance, parse } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { ReactComponent as RefreshIcon } from '../icons/refresh.svg';
+import Button from '../components/Button';
 
 
 const calculateDays = (orderDate, deliveredDate) => {
+  console.log(orderDate, deliveredDate)
   const formatString = 'MM/dd/yyyy, hh:mm:ss a';
   const startDate = parse(orderDate, formatString, new Date());
 
@@ -52,24 +54,34 @@ const ParcelManagementPage = () => {
     // return () => clearInterval(interval);
   }, []);
 
+  const handleCreateNew = () => {
+    navigate('/new-delivery'); // Use the actual route for creating a new delivery
+  };
+
   const handleLogout = () => {
     resetUserSession();
     navigate('/')
   }
 
   return (
-    <div className="min-h-screen">
-      <h1 className="text-2xl font-bold text-center my-4">Parcel Management</h1>
+    <div className="100vh px-8 bg-[#EBFEFA]"> {/* Adjust the background color */}
+      <h1 className="text-2xl font-bold text-left py-6">SmartDrop Parcel Management</h1>
+      <div className="flex justify-between gap-2">
+        <div className='flex gap-2'>
+          <Button className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" onClick={handleCreateNew}>
+            Create New Delivery
+          </Button>
+          <Button onClick={handleLogout} className="text-white bg-red-400 hover:bg-red-500 py-2 px-4 rounded">
+            Logout
+          </Button>
+        </div>
+        <Button onClick={() => {request(getDeviceID())}}
+          className="text-gray-600 hover:bg-purple-200 bg-white rounded px-1 py-1"
+        >
+          <RefreshIcon className="w-8 h-8"/>
+        </Button>
+      </div>
       {data && <ParcelList parcels={data.map(it => apiItemAdapte(it))} />}
-      <button onClick={handleLogout} className="text-white bg-gray-400 hover:bg-gray-600 rounded absolute bottom-0 left-0 m-4 p-4">
-        Logout
-      </button>
-      <button
-        onClick={() => {request(getDeviceID());}}
-        className="absolute bottom-0 right-0 m-4 p-2 text-gray-600 hover:text-gray-800 bg-purple-200 rounded-xl"
-      >
-        <RefreshIcon className="w-12 h-12"/>
-      </button>
     </div>
   );
 };
