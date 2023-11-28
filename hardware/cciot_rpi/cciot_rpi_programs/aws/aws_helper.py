@@ -39,7 +39,7 @@ def publish_to_validate_topic(mqtt_connection, payload):
     publishToIOTCore(mqtt_connection, PUB_TOPIC, payload)
 
 def subscribe_to_take_photo_topic(mqtt_connection):
-    SUB_TOPIC = ESP32_PHOTO_UPLOADED_TOPIC
+    SUB_TOPIC = ESP32_PHOTO_PUBLISHED_TOPIC
     subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_take_photo_message_received)
 
 def publish_to_take_photo_topic(mqtt_connection, payload):
@@ -68,7 +68,7 @@ def validate_passcode_payload(payload):
 
 # Helper function to validate the take photo payload
 def validate_take_photo_payload(payload):
-    return payload["imageURL"] != None
+    return payload["published"]
 
 def aws_setup():
     # Create a MQTT connection 
