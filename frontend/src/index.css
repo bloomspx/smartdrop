@@ -18,3 +18,12 @@ p {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html.h-full {
+  height: 100%;
+}
+
+/* Set 100% height for the body element */
+body.min-h-full {
+  min-height: 100%;
+}
