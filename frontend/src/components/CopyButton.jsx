@@ -3,9 +3,13 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const CopyButton = ({ textToCopy }) => {
+  const deliveryMsg = `Hello, you will be delivering to a SmartDrop!
+Kindly follow the instructions on the SmartDrop and enter the passcode ${textToCopy} when prompted.
+Thank you!`
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      await navigator.clipboard.writeText(deliveryMsg);
       toast.success('Copied successfully!', {
         position: "top-right",
         autoClose: 5000,
@@ -28,16 +32,18 @@ const CopyButton = ({ textToCopy }) => {
     }
   };
 
+
   return (
-    <div className="w-full max-w-xs mx-auto h-auto">
-      <div className="text-purple-700 p-2 rounded-t-lg border border-purple-500">
-        Copy delivery instruction template with passcode
+    <div className="flex flex-col justify-center w-full max-w-xs h-auto ">
+      <div className="text-black p-2 text-center rounded-t-lg border-2 border-indigo-600">
+        {/* Copy delivery instruction template with passcode */}
+        {textToCopy}
       </div>
       <button 
         onClick={handleCopy} 
-        className="bg-purple-500 text-white p-2 rounded-b-lg w-full border border-purple-500 hover:bg-purple-600 focus:outline-none focus:bg-purple-600 transition-colors"
+        className="bg-indigo-600 text-white p-2 rounded-b-lg w-full hover:bg-indigo-800 focus:outline-none focus:bg-indigo-700 transition-colors"
       >
-        Copy
+        Copy delivery instructions
       </button>
     </div>
   );
