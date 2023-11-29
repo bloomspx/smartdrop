@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CopyButton from './CopyButton';
 
 const ParcelItem = ({ item }) => {
+
+  const [isExpanded, setIsExpanded] = useState(false);
   const borderColorClass = item.isDelivered ? 'border-green-500' : 'border-yellow-400';
   const statusIcon = item.isDelivered ? '✅' : '🕗';
   const statusText = item.isDelivered ? 'Delivered' : 'Expected Delivery In Progress';
+
+  const toggleImage = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <div className={`flex h-52 justify-between items-center p-4 border-l-4 ${borderColorClass} bg-white rounded-lg shadow-md`}>
@@ -27,10 +33,15 @@ const ParcelItem = ({ item }) => {
 
       {/* Right column: Image or Copy button */}
       {/* <div className="flex items-stretch justify-end flex-grow"> */}
-      <div className="flex h-full basis-1/4 justify-end ">
+      <div className="flex h-full basis-1/4 justify-end">
         {item.isDelivered ? (
-          <img src={item.imageSrc} alt={`Delivery ${item.productName}`} className="object-scale-down rounded" />
-        ) : (
+        <img 
+          src={item.imageSrc} 
+          alt={`Delivery ${item.productName}`} 
+          className={`object-scale-down rounded shadow-md cursor-pointer transition-transform duration-300 hover:scale-150`} 
+          onClick={toggleImage}
+        />)           
+        : (
         <CopyButton textToCopy={item.passcode}/>
         )}
       </div>

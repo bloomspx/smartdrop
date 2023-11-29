@@ -12,7 +12,7 @@ import Button from '../components/Button';
 
 
 const calculateDays = (orderDate, deliveredDate) => {
-  console.log(orderDate, deliveredDate)
+  // console.log(orderDate, deliveredDate)
   const formatString = 'MM/dd/yyyy, hh:mm:ss a';
   const startDate = parse(orderDate, formatString, new Date());
 
@@ -63,6 +63,10 @@ const ParcelManagementPage = () => {
     navigate('/')
   }
 
+  const handleReload = () => {
+    window.location.reload();
+  }
+
   return (
     <div className="flex flex-col align-top mx-auto px-6 min-h-screen max-w-screen-lg bg-[#EBFEFA]"> {/* Adjust the background color */}
       <h1 className="text-2xl font-bold text-left pt-6 pb-4">SmartDrop Parcel Management</h1>
@@ -76,7 +80,7 @@ const ParcelManagementPage = () => {
           </Button>
         </div>
         <button
-          onClick={() => {request(getDeviceID());}}
+          onClick={handleReload}
           className=" p-1 bg-white hover:bg-gray-100 rounded-xl"
         >
           <RefreshIcon className="w-10 h-10"/>

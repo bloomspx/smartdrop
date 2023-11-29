@@ -34,8 +34,8 @@ Thank you!`
 
 
   return (
-    <div className="flex flex-col justify-center w-full max-w-xs h-auto ">
-      <div className="text-black p-2 text-center rounded-t-lg border-2 border-indigo-600">
+    <div className="flex flex-col justify-center w-full max-w-xs h-auto">
+      <div className="text-black p-2 text-center rounded-t-lg shadow-md border-2 border-indigo-600">
         {/* Copy delivery instruction template with passcode */}
         {textToCopy}
       </div>
