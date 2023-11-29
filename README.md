@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <b>SmartDrop</b>
     <br>
-    2023 50.046 Cloud Computing & Internet of Things (CCIOT)
+    2023 50.046 Cloud Computing & Internet of Things
     <br>
 </h1>
 
@@ -18,7 +18,7 @@
 </div>
 
 <table align="center">
-<b>Group 2: </b>
+<h2>Group 2: </h2>
   <tr>
     <td align="center"><a href="https://github.com/ssjh23"><img src="https://avatars.githubusercontent.com/u/64569228?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Sean Soo</b><br/>1005263</sub></a><br />
     <td align="center"><a href="https://github.com/ryanpantk"><img src="https://avatars.githubusercontent.com/u/66586824?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ryan Pan</b><br/> 1005037</sub></a><br />
@@ -27,7 +27,7 @@
   </tr>
 </table>
 
-## Resources
+# Resources
 - [Figma Design](https://www.figma.com/file/BpAjt1A0xH5UF9vkK0eMGI/Untitled?type=design&node-id=0-1&mode=design)
 - [Application Workflow](https://miro.com/app/board/uXjVNQhIkzs=/)
 
@@ -86,14 +86,14 @@ Endpoint: `/neworder`: takes in a dict of {deviceID, itemName, shopName} and ret
 The 2 following lambda functions facilitate the communication between the ESP32, Raspberry Pi and AWS IoT Core using MQTT.
 
 ### 1. `smart-locker-validate-order`
-- SUB to `/cciot/validate`. 
-- On trigger, uses {deviceID, passcode} to check for a valid order entry in DynamoDB. 
-- PUB to `/cciot/validated` with {deviceID, passcode, isValidated} for status on whether passcode corresponds to a valid order in device.
+- SUB to `/cciot/validate`
+- On trigger, uses {deviceID, passcode} to check for a valid order entry in DynamoDB
+- PUB to `/cciot/validated` with {deviceID, passcode, isValidated} for status on whether passcode corresponds to a valid order in device
 
 ### 2. `smart-locker-publish-photo`
-- SUB to `/cciot/publish-photo`. 
-- On trigger, updates DynamoDB with imageURL, deliveredDate and deliveredStatus. 
-- PUB to `/cciot/photo-published` with {deviceID, passcode, published} for successful entry update.
+- SUB to `/cciot/publish-photo`
+- On trigger, updates DynamoDB with imageURL, deliveredDate and deliveredStatus
+- PUB to `/cciot/photo-published` with {deviceID, passcode, published} for successful entry update
 
 
 # File Directories
