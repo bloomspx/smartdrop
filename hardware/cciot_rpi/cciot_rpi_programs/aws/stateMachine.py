@@ -522,7 +522,7 @@ def state_machine(ctk):
         elif process_state == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
             checkAdditionalOrdersPayload()
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
-            lock_box()
+            app.after(1000,lock_box())
         curr_process_state = process_state
         curr_user_input = user_input
 
