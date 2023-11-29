@@ -30,7 +30,7 @@ const calculateDays = (orderDate, deliveredDate) => {
 const apiItemAdapte = (item) => {
   return {
     productName: item.itemName.S,
-    dateOrdered: item.orderDate.S.split(',')[0],
+    dateOrdered: item.orderDate.S,
     dateDelivered: item.deliveredDate.S,
     imageSrc: item.imageURL.S,
     deviceID: item.deviceID.S,
@@ -65,7 +65,7 @@ const ParcelManagementPage = () => {
 
   return (
     <div className="flex flex-col align-top mx-auto px-6 min-h-screen max-w-screen-lg bg-[#EBFEFA]"> {/* Adjust the background color */}
-      <h1 className="text-2xl font-bold text-left py-6">SmartDrop Parcel Management</h1>
+      <h1 className="text-2xl font-bold text-left pt-6 pb-4">SmartDrop Parcel Management</h1>
       <div className="flex justify-between gap-2">
         <div className='flex gap-2'>
           <Button className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded" onClick={handleCreateNew}>
