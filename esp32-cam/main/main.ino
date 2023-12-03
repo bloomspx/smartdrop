@@ -71,7 +71,7 @@ void initCamera(){
   if(psramFound()){
     Serial.printf("PSRAM found");
     config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 12;
+    config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
     Serial.printf("PSRAM not found");
@@ -142,14 +142,14 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
     fb = NULL;
   }
 
-  digitalWrite(FLASH_GPIO_NUM, HIGH);
-  delay(500);
-
   fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera capture failed");
     return ESP_FAIL;
   }
+
+  digitalWrite(FLASH_GPIO_NUM, HIGH);
+  delay(500);
 
   digitalWrite(FLASH_GPIO_NUM, LOW);
   delay(500);
