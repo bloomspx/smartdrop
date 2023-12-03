@@ -4,7 +4,7 @@ import os
 # from PIL import Image
 from enum import Enum
 import RPi.GPIO as GPIO
-from aws_helper import *
+from awsHelper import *
 
 
 class ctkApp(customtkinter.CTk):
