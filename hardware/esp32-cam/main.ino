@@ -12,12 +12,14 @@
 #include <string>
 #include "Base64.h"
 #include "mbedtls/base64.h"
- 
+
+// MQTT Topics 
 #define ESP32_TAKE_PHOTO_TOPIC "cciot/take-photo" //rpi pub, esp32 sub - deviceID, passcode
 #define ESP32_PHOTO_UPLOADED_TOPIC   "cciot/photo-uploaded" //esp32 pub, rpi sub
 #define ESP32_PUBLISH_PHOTO_TOPIC "cciot/publish-photo" //esp32 pub, cloud iot core sub - imageURL, deviceID, passcode
 #define ESP32_PHOTO_PUBLISHED_TOPIC "cciot/photo-published" //cloud iot core pub, esp32 sub
 
+// ESP32 Cam Configuration
 #define CAM_PIN_PWDN 32
 #define CAM_PIN_RESET -1 //software reset will be performed
 #define CAM_PIN_XCLK 0
@@ -36,16 +38,19 @@
 #define CAM_PIN_PCLK 22
 #define FLASH_GPIO_NUM 4
  
-WiFiClientSecure net = WiFiClientSecure();
-PubSubClient client(net);
+// Global Variables
+WiFiClientSecure wifiClient = WiFiClientSecure();
+PubSubClient mqttClient(wifiClient);
 
 // Variables
 bool internetConnected = false;
 
+//Initialize camera
 void initCamera(){
- // OV2640 / OV5640 camera module
+  // OV5640 camera module
   camera_config_t config;
 
+  // Assign pins
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
   config.pin_d0 = CAM_PIN_D0;
@@ -68,6 +73,7 @@ void initCamera(){
   config.pixel_format = PIXFORMAT_JPEG;
   config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
   
+  // Set JPEG quality
   if(psramFound()){
     Serial.printf("PSRAM found");
     config.frame_size = FRAMESIZE_UXGA;
@@ -80,7 +86,7 @@ void initCamera(){
     config.fb_count = 1;
   }
   
-  // Camera init
+  // Init Camera
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -88,6 +94,7 @@ void initCamera(){
   } 
 }
 
+// Initialize Wifi connection
 bool initWifi() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -100,7 +107,8 @@ bool initWifi() {
     return true;
 }
 
-esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+// Handle HTTP API Response
+esp_err_t httpEventHandler(esp_http_client_event_t *evt)
 {
   switch (evt->event_id) {
     case HTTP_EVENT_ERROR:
@@ -131,46 +139,50 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
   return ESP_OK;
 }
 
+// Take and upload photo
 static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) {
   camera_fb_t * fb = NULL;
   esp_err_t res = ESP_OK;
 
-  // Skip first 3 frames (increase/decrease number as needed).
+  // Skip first 3 frames (increase/decrease number as needed)
   for (int i = 0; i < 4; i++) {
     fb = esp_camera_fb_get();
     esp_camera_fb_return(fb);
     fb = NULL;
   }
 
+  // Turn on the flash
+  digitalWrite(FLASH_GPIO_NUM, HIGH);
+  delay(500);
+
+  // Take photo and save to buffer fb
   fb = esp_camera_fb_get();
   if (!fb) {
     Serial.println("Camera capture failed");
     return ESP_FAIL;
   }
 
-  digitalWrite(FLASH_GPIO_NUM, HIGH);
-  delay(500);
-
+  // Turn off the flash
   digitalWrite(FLASH_GPIO_NUM, LOW);
   delay(500);
 
+  // Image Data Preparation 
   Serial.println("Uploading Photo");
   int image_buf_size = 4000 * 1000;                                                  
   uint8_t *image = (uint8_t *)ps_calloc(image_buf_size, sizeof(char));
-
   size_t length=fb->len;
   size_t olen;
   Serial.print("length is");
   Serial.println(length);
   int err1 = mbedtls_base64_encode(image, image_buf_size, &olen, fb->buf, length);
-
-  esp_http_client_handle_t http_client;
-  esp_http_client_config_t config_client = {0};
-  
   String deviceIDString = deviceID;
   String passcodeString = passcode;
-  publishToAWS(deviceID, passcode);
 
+  // http client and config client initialization
+  esp_http_client_handle_t http_client;
+  esp_http_client_config_t config_client = {0};
+
+  // API Call Data Preparation
   Serial.println(deviceIDString);
   Serial.println(passcodeString);
   String putUrl2 = "https://zoo7ealxvd.execute-api.ap-southeast-1.amazonaws.com/dev/cciot-smart-delivery/" + deviceIDString + "_" + passcodeString + ".jpg";
@@ -179,91 +191,97 @@ static esp_err_t takeAndUploadPhoto(const char* deviceID, const char* passcode) 
   putUrl2.toCharArray(putUrl3, sizeof(putUrl3));
   Serial.println(putUrl3);
 
+  // API Call Configuration
   config_client.url = putUrl3;
   config_client.cert_pem = AWS_CERT_CA;
-  // config_client.cert_len = AWS_CERT_CA 
-  config_client.event_handler = _http_event_handler;
+  config_client.event_handler = httpEventHandler;
   config_client.method = HTTP_METHOD_PUT;
   
+  // Initialize HTTP Client
   http_client = esp_http_client_init(&config_client);
   esp_http_client_set_post_field(http_client, (const char *)fb->buf, fb->len);
   esp_http_client_set_header(http_client, "Content-Type", "image/jpg");
 
+  // Perform API Call
   esp_err_t err = esp_http_client_perform(http_client);
   if (err == ESP_OK) {
     Serial.print("esp_http_client_get_status_code: ");
     Serial.println(esp_http_client_get_status_code(http_client));
   }
+
+  // Clean up HTTP Client
   esp_http_client_cleanup(http_client);
   esp_camera_fb_return(fb);
+
+  // Publish to MQTT topic
+  publishToAWS(deviceID, passcode);
 }
 
-  
- 
-void connectAWS()
-{
+// Subscribe to MQTT topics 
+void connectAWS() {
   // Configure WiFiClientSecure to use the AWS IoT device credentials
-  net.setCACert(AWS_CERT_CA);
-  net.setCertificate(AWS_CERT_CRT);
-  net.setPrivateKey(AWS_CERT_PRIVATE);
+  wifiClient.setCACert(AWS_CERT_CA);
+  wifiClient.setCertificate(AWS_CERT_CRT);
+  wifiClient.setPrivateKey(AWS_CERT_PRIVATE);
+
   // Connect to the MQTT broker on the AWS endpoint we defined earlier
-  client.setServer(AWS_IOT_ENDPOINT, 8883);
+  mqttClient.setServer(AWS_IOT_ENDPOINT, 8883);
+
   // Create a message handler
-  client.setCallback(messageHandler);
+  mqttClient.setCallback(messageHandler);
   Serial.println("Connecting to AWS IOT");
-  while (!client.connect(THINGNAME))
+  while (!mqttClient.connect(THINGNAME))
   {
     Serial.print(".");
     delay(100);
   }
-  if (!client.connected())
+  if (!mqttClient.connected())
   {
     Serial.println("AWS IoT Timeout!");
     return;
   }
-  // Subscribe to a topic
-  client.subscribe(ESP32_TAKE_PHOTO_TOPIC);
-  client.subscribe(ESP32_PHOTO_PUBLISHED_TOPIC);
+
+  // Subscribe to topics
+  mqttClient.subscribe(ESP32_TAKE_PHOTO_TOPIC);
+  mqttClient.subscribe(ESP32_PHOTO_PUBLISHED_TOPIC);
   Serial.println("AWS IoT Connected!");
 }
- 
-void publishToAWS(const char* deviceID, const char* passcode)
-{
+
+// Publish to AWS IoT 
+void publishToAWS(const char* deviceID, const char* passcode) {
   StaticJsonDocument<200> doc;
   doc["deviceID"] = deviceID;
   doc["passcode"] = passcode;
   char jsonBuffer[512];
-  serializeJson(doc, jsonBuffer); // print to client
-  client.publish(ESP32_PUBLISH_PHOTO_TOPIC, jsonBuffer);
+  serializeJson(doc, jsonBuffer); // print to mqttClient
+  mqttClient.publish(ESP32_PUBLISH_PHOTO_TOPIC, jsonBuffer);
 }
 
-void publishToRPI(const char* deviceID, const char* passcode)
-{
+// Publish to RPI
+void publishToRPI(const char* deviceID, const char* passcode) {
   StaticJsonDocument<200> doc;
   doc["deviceID"] = deviceID;
   doc["passcode"] = passcode;
   char jsonBuffer[512];
-  serializeJson(doc, jsonBuffer); // print to client
-  client.publish(ESP32_PHOTO_UPLOADED_TOPIC, jsonBuffer);
+  serializeJson(doc, jsonBuffer); // print to mqttClient
+  mqttClient.publish(ESP32_PHOTO_UPLOADED_TOPIC, jsonBuffer);
 }
  
-void messageHandler(char* topic, byte* payload, unsigned int length)
-{
-  Serial.println(topic);
+// Message handler for MQTT topics
+void messageHandler(char* topic, byte* payload, unsigned int length) {
+  // Take photo if message received on ESP32_TAKE_PHOTO_TOPIC
   if (strcmp(topic,ESP32_TAKE_PHOTO_TOPIC)==0) {
-    Serial.println("Taking Photo");
     // Deserialize payload from RPI
     StaticJsonDocument<200> doc;
     deserializeJson(doc, payload);
     const char* deviceID = doc["deviceID"];
     const char* passcode = doc["passcode"];
-
     takeAndUploadPhoto(deviceID, passcode);
-
     Serial.println("Photo Uploaded");
   }
+
+  // Publish to RPI if message received on ESP32_PHOTO_PUBLISHED_TOPIC
   else if (strcmp(topic, ESP32_PHOTO_PUBLISHED_TOPIC)==0) {
-    Serial.println("Publishing to RPI");
     // Deserialize payload from Cloud
     StaticJsonDocument<200> doc;
     deserializeJson(doc, payload);
@@ -273,23 +291,29 @@ void messageHandler(char* topic, byte* payload, unsigned int length)
     publishToRPI(deviceID, passcode);
   }
 }
- 
-void setup()
-{
+
+// Setup function 
+void setup() {
   Serial.begin(9600);
   // Turn-off the 'brownout detector'
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  // Initialize flash GPIO
   pinMode(FLASH_GPIO_NUM, OUTPUT);
+  // Connect to WiFi
   if (initWifi()) {
     internetConnected = true;
     Serial.println("Internet Connected");
   }
+  // Initialize camera
   initCamera();
+  // Connect to AWS and execute callback function based on MQTT subscription
   connectAWS();
 }
- 
+
+// Loop function 
 void loop()
 {
-  client.loop();
+  // Reconnect to AWS if disconnected
+  mqttClient.loop();
   delay(5000);
 }

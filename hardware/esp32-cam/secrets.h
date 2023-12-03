@@ -1,11 +1,11 @@
 #include <pgmspace.h>
  
 #define SECRET
-#define THINGNAME "ESP32_CAM"                         //change this
+#define THINGNAME "ESP32_CAM"                         
  
-const char WIFI_SSID[] = "Pancake";               //change this
-const char WIFI_PASSWORD[] = "qwertyyuiop";           //change this
-const char AWS_IOT_ENDPOINT[] = "a3f2k66wa7dxq0-ats.iot.ap-southeast-1.amazonaws.com";       //change this
+const char WIFI_SSID[] = "Pancake";               
+const char WIFI_PASSWORD[] = "qwertyyuiop";           
+const char AWS_IOT_ENDPOINT[] = "a3f2k66wa7dxq0-ats.iot.ap-southeast-1.amazonaws.com";       
  
 // Amazon Root CA 1
 static const char AWS_CERT_CA[] PROGMEM = R"EOF(
@@ -31,7 +31,7 @@ rqXRfboQnoZsG4q5WTP468SQvvG5
 -----END CERTIFICATE-----
 )EOF";
  
-// Device Certificate                                               //change this
+// Device Certificate                                               
 static const char AWS_CERT_CRT[] PROGMEM = R"KEY(
 -----BEGIN CERTIFICATE-----
 MIIDWTCCAkGgAwIBAgIUMtfSuap0KZKO+00V/rdu+LiDBgwwDQYJKoZIhvcNAQEL
@@ -55,7 +55,7 @@ IvngOMb5jr2mTPFSxA2rZUnBCu4i89FlPyMNAzGrzntb3uaK0+56rgJA5utE
 -----END CERTIFICATE-----
 )KEY";
  
-// Device Private Key                                               //change this
+// Device Private Key                                               
 static const char AWS_CERT_PRIVATE[] PROGMEM = R"KEY(
 -----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEA020q8Rg2g6uFXz597HDB9y0pXPyjg38PXeN2g9KYjwESkOYi
