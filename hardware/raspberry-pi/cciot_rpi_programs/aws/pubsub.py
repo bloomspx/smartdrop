@@ -12,7 +12,7 @@ from config import *
 """
 Publish to an MQTT topic
 """
-def publishToIOTCore(mqtt_connection, topic, message):
+def publish_to_iot_core(mqtt_connection, topic, message):
     print('Begin Publish for topic: ' + topic)
     mqtt_connection.publish(topic=topic, payload=json.dumps(message), qos=mqtt.QoS.AT_LEAST_ONCE)
     print("Published: '" + json.dumps(message) + "' to the topic: " + topic)
@@ -22,7 +22,7 @@ def publishToIOTCore(mqtt_connection, topic, message):
 """
 Subscribe to an MQTT topic
 """
-def subscribeToIOTCore(mqtt_connection, topic, callback):
+def subscribe_to_iot_core(mqtt_connection, topic, callback):
     print("Subscribing to topic: " + topic)
     subscribe_future, packet_id = mqtt_connection.subscribe(
         topic=topic,
@@ -80,7 +80,7 @@ def on_connection_closed(connection, callback_data):
 """
 Connect to AWS IOT Core
 """
-def connectToIOTCore():
+def connect_to_iot_core():
     print("Connecting to AWS IOT Core...")
     # Spin up resources
     event_loop_group = io.EventLoopGroup(1)
@@ -114,7 +114,7 @@ def connectToIOTCore():
 """
 Disconnect from AWS IOT Core
 """
-def disconnectFromIOTCore(mqtt_connection):
+def disconnect_from_iot_core(mqtt_connection):
     print("Disconnecting from AWS IOT Core...")
     disconnect_future = mqtt_connection.disconnect()
     disconnect_future.result()

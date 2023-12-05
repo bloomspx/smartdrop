@@ -4,9 +4,7 @@
 # Python Imports
 from awscrt import mqtt, http
 from awsiot import mqtt_connection_builder
-import asyncio
 import sys
-import threading
 import time
 import json
 
@@ -32,19 +30,19 @@ def on_take_photo_message_received(topic, payload, dup, qos, retain, **kwargs):
 
 def subscribe_to_validate_topic(mqtt_connection):
     SUB_TOPIC = AWS_VALIDATED_TOPIC
-    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_passcode_message_received)
+    subscribe_to_iot_core(mqtt_connection, SUB_TOPIC, on_passcode_message_received)
 
 def publish_to_validate_topic(mqtt_connection, payload):
     PUB_TOPIC = AWS_VALIDATE_TOPIC
-    publishToIOTCore(mqtt_connection, PUB_TOPIC, payload)
+    publish_to_iot_core(mqtt_connection, PUB_TOPIC, payload)
 
 def subscribe_to_take_photo_topic(mqtt_connection):
     SUB_TOPIC = ESP32_PHOTO_PUBLISHED_TOPIC
-    subscribeToIOTCore(mqtt_connection, SUB_TOPIC, on_take_photo_message_received)
+    subscribe_to_iot_core(mqtt_connection, SUB_TOPIC, on_take_photo_message_received)
 
 def publish_to_take_photo_topic(mqtt_connection, payload):
     PUB_TOPIC = ESP32_TAKE_PHOTO_TOPIC
-    publishToIOTCore(mqtt_connection, PUB_TOPIC, payload)
+    publish_to_iot_core(mqtt_connection, PUB_TOPIC, payload)
 
 def format_validate_payload(deviceID, passcode):
     return {
@@ -72,7 +70,7 @@ def validate_take_photo_payload(payload):
 
 def aws_setup():
     # Create a MQTT connection 
-    mqtt_connection = connectToIOTCore()
+    mqtt_connection = connect_to_iot_core()
     subscribe_to_validate_topic(mqtt_connection)
     subscribe_to_take_photo_topic(mqtt_connection)
     return mqtt_connection
