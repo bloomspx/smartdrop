@@ -106,7 +106,6 @@ The 2 following lambda functions facilitate the communication between the ESP32,
  ┣ 📂publish-photo
  ┣ 📂register 
  ┣ 📂validate-order
- 📦esp32-cam           # esp32 cam code
  📦frontend 
  ┣ 📂public            # images used for frontend
  ┣ 📂src
@@ -117,8 +116,9 @@ The 2 following lambda functions facilitate the communication between the ESP32,
  ┃ ┣ 📂routes          # routing for logged in / non-logged in users
  ┃ ┗ 📂service         # user authentication function
  📦hardware            # configuration for solonoid lock + keypad
+ ┃ ┣ 📂esp32-cam       # esp32 cam code
+ ┃ ┣ 📂raspberry-pi    # raspberry pi configuration
  📦postman             # sample postman calls for backend api
- 📦raspberry-pi        # raspberry pi configuration
  ```
 
 # External Resources
