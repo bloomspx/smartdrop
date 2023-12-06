@@ -9,7 +9,7 @@
     A smart IOT delivery box built with AWS + React using a Raspberry Pi + ESP32
 </p>
 
-![Imgur](https://imgur.com/LEUXtVf.jpg)
+<a href="url"><img src="https://imgur.com/LEUXtVf.jpg" align="center" height="200" width="200" ></a>
 
 <div align="center">
 
