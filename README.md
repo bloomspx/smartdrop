@@ -10,7 +10,8 @@
 </p>
 
 <div align="center">
-![Imgur](https://imgur.com/LEUXtVf)
+![Imgur](https://imgur.com/LEUXtVf.jpg)
+<br>
 </div>
 
 <div align="center">
