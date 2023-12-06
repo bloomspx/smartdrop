@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <b>SmartDrop</b>
     <br>
-    2023 50.046 Cloud Computing & Internet of Things
+    Cloud Computing & Internet of Things
     <br>
 </h1>
 
