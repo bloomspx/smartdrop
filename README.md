@@ -132,7 +132,7 @@ The GET endpoint can be used to retrieve the image file from the S3 bucket
 To integrate Amazon S3 proxy in API Gateway, AWS IAM permissions (roles and policy) were created to allow for AWS S3 actions to be invoked. The steps of setting up the AWS account can be referenced at `https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-s3.html`
 
 The UML state diagram for the ESP32 is as follows
-![Image](https://imgur.com/FCdjvMQ)
+![Imgur](https://imgur.com/FCdjvMQ.jpg)
 
 The ESP32 program uses a OV5640 lens, which offers a 120 degree wide angle perspective and 5 megapixel image quality to ensure photos of the delivered parcel will be of sufficient quality. The ESP32 program subscribes to MQTT topics `/cciot/take-photo` and `/cciot/photo-published`. When it receives a MQTT message on  `/cciot/take-photo` invoked by the Raspberry Pi program, it will proceed to take a photo, upload to AWS S3 and publish to  `/cciot/publish-photo` to inform the backend server that an image have been uploaded. It will then receive an acknowledgement on `/cciot/photo-published` by the backend server, and publish to `cciot/photo-uploaded` to inform the Raspberry Pi program that the photo taking step is completed.
 
