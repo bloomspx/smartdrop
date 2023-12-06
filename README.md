@@ -10,6 +10,10 @@
 </p>
 
 <div align="center">
+![Imgur](https://imgur.com/LEUXtVf)
+</div>
+
+<div align="center">
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
@@ -132,12 +136,17 @@ The GET endpoint can be used to retrieve the image file from the S3 bucket
 To integrate Amazon S3 proxy in API Gateway, AWS IAM permissions (roles and policy) were created to allow for AWS S3 actions to be invoked. The steps of setting up the AWS account can be referenced at `https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-s3.html`
 
 The UML state diagram for the ESP32 is as follows
+
 ![Imgur](https://imgur.com/FCdjvMQ.jpg)
 
 The ESP32 program uses a OV5640 lens, which offers a 120 degree wide angle perspective and 5 megapixel image quality to ensure photos of the delivered parcel will be of sufficient quality. The ESP32 program subscribes to MQTT topics `/cciot/take-photo` and `/cciot/photo-published`. When it receives a MQTT message on  `/cciot/take-photo` invoked by the Raspberry Pi program, it will proceed to take a photo, upload to AWS S3 and publish to  `/cciot/publish-photo` to inform the backend server that an image have been uploaded. It will then receive an acknowledgement on `/cciot/photo-published` by the backend server, and publish to `cciot/photo-uploaded` to inform the Raspberry Pi program that the photo taking step is completed.
 
-# Raspberry Pi State Machine Program
-The Raspberry Pi program is 
+# Raspberry Pi Python Program
+The Raspberry Pi program consists of a Tkinter frontend and a state machine to handle the user input and hardware interactions. 
+
+The Tkinter frontend provides a GUI to guide the deliveryman through the process of delivery and interactions with the SmartDrop box.
+
+The state machine handles the state of the program according to the UML state diagram above and manages the Raspberry Pi's hardware interactions with the keypad, the solenoid lock and the  limit switch.
 
 # External Resources
 - [Date-FNS](https://date-fns.org/)
