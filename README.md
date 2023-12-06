@@ -33,11 +33,35 @@
 - [Application Workflow](https://miro.com/app/board/uXjVNQhIkzs=/)
 
 # Table of Contents
--   [Getting Started](#getting-started)
--   [API Calling](#api-calling)
--   [AWS Lambda Functions for MQTT PUB/SUB](#aws-lambda-functions-for-mqtt-pubsub)
 -   [File Directories](#file-directories)
+-   [Getting Started](#getting-started)
+-   [Dashboard API](#api-calling)
+-   [AWS Lambda Functions for MQTT PUB/SUB](#aws-lambda-functions-for-mqtt-pubsub)
 -   [External Resources](#external-resources)
+
+# File Directories
+```
+📦backend              # AWS backend lambda functions
+ ┣ 📂add-order
+ ┣ 📂get-all-orders
+ ┣ 📂login
+ ┣ 📂publish-photo
+ ┣ 📂register 
+ ┣ 📂validate-order
+ 📦frontend 
+ ┣ 📂public            # images used for frontend
+ ┣ 📂src
+ ┃ ┣ 📂api             # custom api function
+ ┃ ┣ 📂components      # building blocks for webpage
+ ┃ ┣ 📂icons           # icons used for frontend
+ ┃ ┣ 📂pages           # main webpages: login, register, dashboard, add order
+ ┃ ┣ 📂routes          # routing for logged in / non-logged in users
+ ┃ ┗ 📂service         # user authentication function
+ 📦hardware            # configuration for solonoid lock + keypad
+ ┃ ┣ 📂esp32-cam       # esp32 cam code
+ ┃ ┣ 📂raspberry-pi    # raspberry pi configuration
+ 📦postman             # sample postman calls for backend api
+ ```
 
 # Getting Started
 ### 1. Install Node dependencies 
@@ -53,7 +77,7 @@ npm start
 ```
 
 
-# API Calling
+# Dashboard API (AWS API Gateway)
 Our frontend server makes API calls to the [AWS Server API](https://woqp7vxlb1.execute-api.ap-southeast-1.amazonaws.com/beta). Sample Postman calls can be found in `/postman`. 
 Overall, there are 5 main endpoints, with each endpoint corresponding to its own AWS lambda function:
 
@@ -96,30 +120,24 @@ The 2 following lambda functions facilitate the communication between the ESP32,
 - On trigger, updates DynamoDB with imageURL, deliveredDate and deliveredStatus
 - PUB to `/cciot/photo-published` with {deviceID, passcode, published} for successful entry update
 
+# ESP32 Camera Program (AWS API Gateway and S3)
+2 API endpoints were created on API Gateway to allow the ESP32 board to make direct API calls to the AWS server to PUT and GET the images onto the S3 bucket.
 
-# File Directories
-```
-📦backend              # AWS backend lambda functions
- ┣ 📂add-order
- ┣ 📂get-all-orders
- ┣ 📂login
- ┣ 📂publish-photo
- ┣ 📂register 
- ┣ 📂validate-order
- 📦frontend 
- ┣ 📂public            # images used for frontend
- ┣ 📂src
- ┃ ┣ 📂api             # custom api function
- ┃ ┣ 📂components      # building blocks for webpage
- ┃ ┣ 📂icons           # icons used for frontend
- ┃ ┣ 📂pages           # main webpages: login, register, dashboard, add order
- ┃ ┣ 📂routes          # routing for logged in / non-logged in users
- ┃ ┗ 📂service         # user authentication function
- 📦hardware            # configuration for solonoid lock + keypad
- ┃ ┣ 📂esp32-cam       # esp32 cam code
- ┃ ┣ 📂raspberry-pi    # raspberry pi configuration
- 📦postman             # sample postman calls for backend api
- ```
+PUT Endpoint: `https://zoo7ealxvd.execute-api.ap-southeast-1.amazonaws.com/dev/cciot-smart-delivery/{image name}`
+The PUT endpoint is used to upload an image file onto the S3 bucket, by attaching the image file in the body of the API call
+
+GET Endpoint: `https://zoo7ealxvd.execute-api.ap-southeast-1.amazonaws.com/dev/cciot-smart-delivery/{image name}`
+The GET endpoint can be used to retrieve the image file from the S3 bucket
+
+To integrate Amazon S3 proxy in API Gateway, AWS IAM permissions (roles and policy) were created to allow for AWS S3 actions to be invoked. The steps of setting up the AWS account can be referenced at `https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-s3.html`
+
+The ESP32 program uses a OV5640 lens, which offers a 120 degree wide angle perspective and 5 megapixel image quality to ensure photos of the delivered parcel will be of sufficient quality. The ESP32 program subscribes to MQTT topics `/cciot/take-photo` and `/cciot/photo-published`. When it receives a MQTT message on  `/cciot/take-photo` invoked by the Raspberry Pi program, it will proceed to take a photo, upload to AWS S3 and publish to  `/cciot/publish-photo` to inform the backend server that an image have been uploaded and an item has been delivered. It will then receive an acknowledgement on `/cciot/photo-published`, and publish to `cciot/photo-uploaded` to inform the Raspberry Pi program that the photo taking step is completed and it can continue to the next step.
+
+The UML state diagram for the ESP32 is as follows
+![Image](https://imgur.com/a/0ayqMc1.jpg)
+
+# Raspberry Pi State Machine Program
+The Raspberry Pi program is 
 
 # External Resources
 - [Date-FNS](https://date-fns.org/)
