@@ -1,9 +1,9 @@
 from enum import Enum
 import customtkinter
-import os
 import RPi.GPIO as GPIO
 from awsHelper import *
 
+########################################## CTINKER GUI ##########################################
 
 class ctkApp(customtkinter.CTk):
     def __init__(self):
@@ -96,7 +96,7 @@ class ctkApp(customtkinter.CTk):
         self.please_wait_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
 
         # select default frame
-        self.select_frame_by_name(ProcessState.START_DELIVERY_SEQUENCE)
+        self.select_frame_by_name(ProcessState.STARTDELIVERYSEQUENCE)
 
     def create_navigation_label(self, text):
         return customtkinter.CTkLabel(self.navigation_frame,height=(self.height-80)/6, text=text, corner_radius=8,
@@ -124,8 +124,8 @@ class ctkApp(customtkinter.CTk):
 
     def select_frame_by_name(self, name, user_input=""):
         # set color for current navigation label
-        self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == ProcessState.START_DELIVERY_SEQUENCE else "transparent")
-        self.start_delivery_label.configure(text_color=("gray10", "gray90")if name == ProcessState.START_DELIVERY_SEQUENCE else ("gray10", "gray40"))
+        self.start_delivery_label.configure(fg_color=("gray30", "gray30") if name == ProcessState.STARTDELIVERYSEQUENCE else "transparent")
+        self.start_delivery_label.configure(text_color=("gray10", "gray90")if name == ProcessState.STARTDELIVERYSEQUENCE else ("gray10", "gray40"))
         self.enter_passcode_label.configure(fg_color=("gray30", "gray30")  if name == ProcessState.WAITINGTOUNLOCKBOX  or name == ProcessState.KEYINGINORDERS or name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD else "transparent")
         self.enter_passcode_label.configure(text_color=("gray10", "gray90") if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS or name == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD or name == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD else ("gray10", "gray40"))
         self.photo_label.configure(fg_color=("turquoise4", "turquoise4")  if name == ProcessState.TAKINGORDERPICTURE or  name == ProcessState.WAITINGFORPICTUREPAYLOAD else "transparent")
@@ -135,7 +135,7 @@ class ctkApp(customtkinter.CTk):
         self.close_box_label.configure(fg_color=("turquoise4", "turquoise4") if name == ProcessState.WAITINGTOLOCKBOX else "transparent")
         self.close_box_label.configure(text_color=("gray10", "gray90") if name == ProcessState.WAITINGTOLOCKBOX else ("gray10", "gray40"))
         # show selected frame
-        if name == ProcessState.START_DELIVERY_SEQUENCE:
+        if name == ProcessState.STARTDELIVERYSEQUENCE:
             self.forget_all_frames()
             self.start_delivery_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
         if name == ProcessState.WAITINGTOUNLOCKBOX or name == ProcessState.KEYINGINORDERS:
@@ -159,12 +159,14 @@ class ctkApp(customtkinter.CTk):
             self.forget_all_frames()
             self.close_box_frame.grid(row=0, column=1, sticky="nsew", padx=60, pady=100)
 
+########################################## HARDWARE ##########################################
+
 class LockState(Enum):
     LOCKED = 1
     UNLOCKED = 2
 
 class ProcessState(Enum):
-    START_DELIVERY_SEQUENCE = 0,
+    STARTDELIVERYSEQUENCE = 0,
     WAITINGTOUNLOCKBOX = 1,
     WAITINGFORUNLOCKBOXPAYLOAD = 2
     TAKINGORDERPICTURE = 3,
@@ -199,7 +201,7 @@ LimitSwitchPin = 23
 
 user_input = ""
 lock_state = LockState.LOCKED
-process_state = ProcessState.START_DELIVERY_SEQUENCE
+process_state = ProcessState.STARTDELIVERYSEQUENCE
 limit_switch_state = LimitSwitchState.CLOSED
 keypadPressed = -1
 switch_state = 1
@@ -207,8 +209,8 @@ prev_switch_state = -1
 device_id = "simple_id"
 most_recent_keyed_in_passcode = ""
 mqtt_connection = None
-prev_process_state = ProcessState.START_DELIVERY_SEQUENCE
-curr_process_state = ProcessState.START_DELIVERY_SEQUENCE
+prev_process_state = ProcessState.STARTDELIVERYSEQUENCE
+curr_process_state = ProcessState.STARTDELIVERYSEQUENCE
 prev_user_input = user_input
 curr_user_input = user_input
 prev_passcode_valid = True
@@ -248,7 +250,7 @@ def hardware_setup():
     return
 
 # Reads the columns and appends the value, that corresponds to the button, to a variable
-def readLine(line, characters):
+def read_line(line, characters):
     global user_input
     # Sends a pulse on each line to detect button presses
     GPIO.output(line, GPIO.HIGH)
@@ -260,7 +262,7 @@ def readLine(line, characters):
         user_input = user_input + characters[2]
     GPIO.output(line, GPIO.LOW)
 
-########################################## STATE SPECIFIC FUNCTIONS ##########################################\
+########################################## STATE SPECIFIC FUNCTIONS ##########################################
 ## START DELIVERY SEQUENCE ##
 def start_delivery_sequence():
     global process_state
@@ -269,7 +271,7 @@ def start_delivery_sequence():
 def invalid_asterisk_at_start_state():
     global process_state
     print("Please press # to start delivery sequence")
-    process_state = ProcessState.START_DELIVERY_SEQUENCE
+    process_state = ProcessState.STARTDELIVERYSEQUENCE
 
 ## WAITINGTOUNLCOCKBOX ##
 # Backspace func 
@@ -296,7 +298,7 @@ def confirm_passcode():
     return
 
 ## WAITINGFORUNLOCKBOXPAYLOAD ##
-def checkUnlockBoxPayload():
+def check_unlock_box_payload():
     global process_state
     global mqtt_connection
     global device_id
@@ -338,7 +340,7 @@ def invalidate_asterisk_at_photo_state():
     process_state = ProcessState.TAKINGORDERPICTURE
 
 ## WAITINGFORPICTUREPAYLOAD ##
-def checkPicturePayload():
+def check_picture_payload():
     global process_state
     global mqtt_connection
     global device_id
@@ -385,7 +387,7 @@ def key_in_additional_orders():
     return
 
 ## WAITINGFORADDITIONALORDERSPAYLOAD ##
-def checkAdditionalOrdersPayload():
+def check_additional_orders_payload():
     global process_state
     global mqtt_connection
     global device_id
@@ -433,7 +435,7 @@ def lock_box():
     global process_state
     if limit_switch_state == LimitSwitchState.CLOSED:
         lock()
-        process_state = ProcessState.START_DELIVERY_SEQUENCE
+        process_state = ProcessState.STARTDELIVERYSEQUENCE
     else:
         print("Please close the door properly")
     return
@@ -444,7 +446,7 @@ def invalid_asterisk_at_locking_state():
     process_state = ProcessState.WAITINGTOLOCKBOX
 
 ########################################## GENERAL KEYPAD FUNCTIONS ##########################################
-def checkSpecialKeys(hash_func, asterisk_func):
+def check_special_keys(hash_func, asterisk_func):
     global process_state
     global user_input
     pressed = False
@@ -461,11 +463,11 @@ def checkSpecialKeys(hash_func, asterisk_func):
     return pressed
 
 def keypad_input(hash_func, asterisk_func):
-    if not checkSpecialKeys(hash_func, asterisk_func):
-        readLine(L1, ["1","2","3"])
-        readLine(L2, ["4","5","6"])
-        readLine(L3, ["7","8","9"])
-        readLine(L4, ["*","0","#"])
+    if not check_special_keys(hash_func, asterisk_func):
+        read_line(L1, ["1","2","3"])
+        read_line(L2, ["4","5","6"])
+        read_line(L3, ["7","8","9"])
+        read_line(L4, ["*","0","#"])
 
 
 def state_machine(ctk):
@@ -479,23 +481,23 @@ def state_machine(ctk):
         if GPIO.input(keypadPressed) == 0:
             keypadPressed = -1
     else:
-        if process_state == ProcessState.START_DELIVERY_SEQUENCE:
+        if process_state == ProcessState.STARTDELIVERYSEQUENCE:
             print("Press # to start delivery sequence")
             keypad_input(hash_func=start_delivery_sequence, asterisk_func=invalid_asterisk_at_start_state)
         elif process_state == ProcessState.WAITINGTOUNLOCKBOX and lock_state == LockState.LOCKED:
             keypad_input(hash_func=confirm_passcode, asterisk_func=backspace)
         elif process_state == ProcessState.WAITINGFORUNLOCKBOXPAYLOAD:
-            checkUnlockBoxPayload()
+            check_unlock_box_payload()
         elif process_state == ProcessState.TAKINGORDERPICTURE:
             keypad_input(hash_func=taking_order_picture, asterisk_func=invalidate_asterisk_at_photo_state)
         elif process_state == ProcessState.WAITINGFORPICTUREPAYLOAD:
-            checkPicturePayload()
+            check_picture_payload()
         elif process_state == ProcessState.CONFIRMINGMOREORDERS:
             keypad_input(hash_func=confirm_more_orders, asterisk_func=confirm_no_more_orders)
         elif process_state == ProcessState.KEYINGINORDERS:
             keypad_input(hash_func=key_in_additional_orders, asterisk_func=start_locking_sequence)
         elif process_state == ProcessState.WAITINGFORADDITIONALORDERSPAYLOAD:
-            checkAdditionalOrdersPayload()
+            check_additional_orders_payload()
         elif process_state == ProcessState.WAITINGTOLOCKBOX:
             app.after(1000,lock_box())
         curr_process_state = process_state
@@ -526,11 +528,12 @@ def check_change_of_passcode_valid():
         return True
     return False
 
+########################################## DRIVER FUNCTION ##########################################
 app = ctkApp()
 mqtt_connection = aws_setup()
 hardware_setup()
 
-def myMainLoop():
+def my_main_loop():
     global switch_state
     global prev_switch_state
     global mqtt_connection
@@ -570,9 +573,9 @@ def myMainLoop():
                 app.select_frame_by_name(curr_process_state, curr_user_input)
             if check_change_of_passcode_valid():
                 app.select_frame_by_name(curr_process_state, curr_user_input)
-    app.after(100, myMainLoop)
+    app.after(100, my_main_loop)
 
-app.after(100, myMainLoop)
+app.after(100, my_main_loop)
 app.mainloop()
 
 
