@@ -38,6 +38,8 @@
 # Resources
 - [Figma Design](https://www.figma.com/file/BpAjt1A0xH5UF9vkK0eMGI/Untitled?type=design&node-id=0-1&mode=design)
 - [Application Workflow](https://miro.com/app/board/uXjVNQhIkzs=/)
+- [Medium Article](https://medium.com/@ryanpan_43187/sutd-cciot-smart-delivery-box-8b5cd5283e65)
+- [Video Demonstration](https://youtube.com/playlist?list=PLT9Mg9Q3WbbJTSb1xIE-FPD6bgm0r0-D2&feature=shared)
 
 # Table of Contents
 -   [File Directories](#file-directories)
