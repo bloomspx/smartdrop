@@ -149,6 +149,8 @@ The Raspberry Pi program consists of a Tkinter frontend and a state machine to h
 
 The Tkinter frontend provides a GUI to guide the deliveryman through the process of delivery and interactions with the SmartDrop box.
 
+![Imgur](https://imgur.com/y8XUGue.jpg)
+
 The state machine handles the state of the program according to the UML state diagram above and manages the Raspberry Pi's hardware interactions with the keypad, the solenoid lock and the  limit switch.
 
 # External Resources
